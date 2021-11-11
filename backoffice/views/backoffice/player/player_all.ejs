@@ -1,0 +1,227 @@
+<%- include('../../layout/header'); -%>
+
+<%- include('../../layout/nav'); -%>
+
+<style>
+.navbar {
+    margin-bottom: 0 !important;
+}
+</style>
+
+<main id="v-app">
+
+    <template v-if="gameTrx != null">
+
+        <div class="container bg-success" style="margin-left: 0; margin-right: 0; width: 100%; max-width: none;">
+            <div class="row p-3 align-items-center">
+                <div class="text-white ps-5 col-md-6">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="h2">Lecteur de jeu</div>
+                        </div>
+                        <div class="col-md-6 pt-2">
+                            <div class="mb-2">{{ gameTrx.title }}</div>
+                            <div>Pays: {{ gameTrx.country }}</div>
+                        </div>
+                        <div class="col-md-6 pt-2">
+                            <div class="mb-2">Nombre de transactions: {{ gameTrx.nbrTrxMax }}</div>
+                            <div>Méthode: {{ gameTrx.paymentmethod }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 d-flex justify-content-center">
+                    <div class="bg-white pt-3 ps-3 pe-3 pb-2 rounded">
+                        <form action="">
+                            <div class="mb-2">
+                                <!--
+                                <label for="database" class="form-label small">Base de données</label>
+                                -->
+                                <input v-model="strategy.nbrTrx" type="number" min="0" v-bind:max="gameTrx.nbrTrxMax" name="nbrTrx" id="nbrTrx" class="form-control form-control-sm" />
+                            </div>
+                            <div class="mb-2">
+                                <!--
+                                <label for="database" class="form-label small">Base de données</label>
+                                -->
+                                <select v-model="strategy.database" name="database" id="database" class="form-control form-control-sm">
+                                    <template v-for="database in strategies.databases">
+                                        <option v-bind:value="database.code">{{ database.label }}</option>
+                                    </template>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <label for="insertionStrategy" class="form-label small">Stratégie d'insertion</label>
+                                <select v-model="strategy.insertionStrategy" name="insertionStrategy" id="insertionStrategy" class="form-control form-control-sm">
+                                    <template v-for="database in strategies.insertion">
+                                        <option v-bind:value="database.code">{{ database.label }}</option>
+                                    </template>
+                                </select>
+                            </div>
+                            <div class="form-check">
+                                <input v-model="strategy.useKafka" class="form-check-input" type="checkbox" value="" id="useKafka" name="useKafka">
+                                <label class="form-check-label small" for="useKafka">
+                                    Utiliser Apache Kafka
+                                </label>
+                            </div>
+                        </form>
+                        <div class="text-end">
+                            <button v-on:click="onPlay" type="button" class="btn btn-success btn-sm">Lancer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div>
+
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="runtime-tab" data-bs-toggle="tab" data-bs-target="#runtime" type="button">Exécution</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks" type="button">Tâches</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="myTabContent">
+
+                <div class="tab-pane fade  show active" id="runtime">
+                    <div v-if="sessions.length == 0" class="text-muted text-center h5 p-5">
+                        Aucun jeu exécuté ou en cours d'exécution
+                    </div>
+                    <div v-else>
+                        <table class="table table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Session ID</th>
+                                    <th scope="col">Nbr. transactions</th>
+                                    <th scope="col">Base de données</th>
+                                    <th scope="col">Stratégie d'insertion</th>
+                                    <th scope="col">Kafka</th>
+                                    <th scope="col">Statut</th>
+                                    <th scope="col">Début</th>
+                                    <th scope="col">Fin</th>
+                                    <th scope="col">Durée</th>
+                                    <th scope="col">Temps de traitement</th>
+                                    <th scope="col" class="text-center">Exécution</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template v-for="(session,index) in sessions">
+                                    <tr>
+                                        <th scope="row">{{ index + 1}}</th>
+                                        <td>{{ session.sessionId }}</td>
+                                        <td>{{ session.nbrTrx }}</td>
+                                        <td>
+                                            <span class="badge bg-info">
+                                                {{ session.databaseLabel }}</td>
+                                            </span>
+                                        <td>{{ session.insertionStrategyLabel }}</td>
+                                        <td>
+                                            <template v-if="!session.useKafka">
+                                                <span class="badge bg-dark">NON</span>
+                                            </template>
+                                            <template v-else-if="session.useKafka">
+                                                <span class="badge bg-success">OUI</span>
+                                            </template>
+                                        </td>
+                                        <td>                                      
+                                            <template v-if="session.status == 'NEW'">
+                                                <span class="badge bg-primary">{{ session.status }}</span>
+                                            </template>
+                                            <template v-else-if="session.status == 'PENDING'">
+                                                <span class="badge bg-secondary">{{ session.status }}</span>
+                                            </template>
+                                            <template v-else-if="session.status == 'FAILED'">
+                                                <span class="badge bg-danger">{{ session.status }}</span>
+                                            </template>
+                                            <template v-else>
+                                                <span class="badge bg-dark">{{ session.status }}</span>
+                                            </template>                                       
+                                        </td>
+                                        <td>{{ session.startingTime }}</td>
+                                        <td>{{ session.endingTime }}</td>
+                                        <td>{{ session.runtime ? session.runtime + "ms" : "" }}</td>
+                                        <td>{{ session.processTime ? session.processTime + "ms" : "" }}</td>
+                                        <td class="text-center">
+                                            <span v-if="session.running" class="spinner-border spinner-border-sm text-success" role="status" aria-hidden="true"></span>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="tasks">
+                    <div v-if="sessions.length == 0" class="text-muted text-center h5 p-5">
+                        Aucun jeu exécuté ou en cours d'exécution
+                    </div>
+                    <div v-else>
+                        <template v-for="(session,index) in sessions">
+                            <div class="m-2 p-4 border show fade mb-2">
+                                <div class="d-flex justify-content-between">
+                                    <h3>
+                                        Session #{{ session.sessionId }}
+                                    </h3>
+                                    <span v-if="session.running" class="spinner-border spinner-border-sm text-success" role="status" aria-hidden="true"></span>
+                                </div>
+                                <div>
+                                    <span class="badge bg-primary">Jeu ID: {{ session.gameTrxId }}</span>
+                                    <span class="badge bg-primary">Kafka: {{ session.useKafkaLabel }}</span>
+                                    <span class="badge bg-primary">Jeu : {{ session.gameTrxId }}</span>
+                                    <span class="badge bg-primary">Scope: {{ session.scope }}</span>
+                                    <span class="badge bg-primary">Insertion: {{ session.insertionStrategy }}</span>
+                                </div>
+                                <table class="table table-striped table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Tâche</th>
+                                            <th scope="col">Date</th>
+                                            <th scope="col">Données</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template v-for="(task,index) in session.tasks">
+                                            <tr>
+                                                <th scope="row" class="text-muted fw-normal">{{ index + 1}}</th>
+                                                <td>{{ task.action }}</td>
+                                                <td>{{ task.date }}</td>
+                                                <td>{{ task.data }}</td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </template>   
+                    </div>
+
+                </div>
+                
+            </div>
+
+        </div>
+
+    </template>
+
+</main>
+
+<%- include('../../layout/scripts'); -%>
+
+<script>
+    var data = {
+        scope: "<%= scope %>",
+        strategies:<%- JSON.stringify(strategies) %>,
+        urls:{
+            getGameTrxUrl: "<%= getGameTrxUrl  %>"
+        }
+    }
+</script>
+<script src="/pages/backoffice-v1/player/player.vue.js"></script>
+<script>
+    var vm = TrxPlayerModeAllPage(data);
+</script>
+
+<%- include('../../layout/footer'); -%>

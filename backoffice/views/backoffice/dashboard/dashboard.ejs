@@ -1,0 +1,120 @@
+<%- include('../../layout/header2') %>
+<div class="wrapper">	
+<%- include('../../layout/sidebar') %>
+<div class="main">
+<%- include('../../layout/navbar') %>
+<main id="v-app"  class="content">
+
+	<div class="text-center mt-5">
+		<div class="h1"><i class="far fa-smile"></i></div>
+		<h1>Bienvenue dans le backoffice</h1>	
+	</div>
+
+</main>
+</div>
+</div>
+<%- include('../../layout/scripts2') %>
+
+<script>
+
+	var vm = new Vue({
+
+		el:"#v-app",
+
+		data:{		
+			PROBLEM:0,
+			OK:1,
+			WARNING:2,
+
+			vmServices: null,
+			showPage:false,
+			servicesStatus:{
+				psg:{
+					statusCode:0,
+					dbStatus:false
+				},
+				pss:{
+					statusCode:0,
+					dbStatus:false
+				},
+				pds:{
+					statusCode:0,
+					dbStatus:false
+				},
+			},
+		},
+
+		beforeCreate: function(){
+			NProgress.start();
+		},
+
+		mounted: function(){
+			this.showPage = true;
+			NProgress.done();
+		},
+
+		methods:{
+			updateVmServices: function(vm){
+				this.vmServices = vm;
+
+				this.servicesStatus.psg.dbStatus = vm.systemServicesUI.psg.dbStatus; 
+
+				if(vm.systemServicesUI.psg.dbStatus == false){
+					if(vm.systemServicesUI.psg.statusCode == true){
+						this.servicesStatus.psg.statusCode = this.WARNING;
+					}else{
+						this.servicesStatus.psg.statusCode = this.PROBLEM;
+					}
+				}else{
+					if(vm.systemServicesUI.psg.statusCode == true){
+						this.servicesStatus.psg.statusCode = this.OK;
+					}else{
+						this.servicesStatus.psg.statusCode = this.DANGER;
+					}
+				}
+
+				this.servicesStatus.pss.dbStatus = vm.systemServicesUI.psg.dbStatus; 
+
+				if(vm.systemServicesUI.pss.dbStatus == false){
+					if(vm.systemServicesUI.pss.statusCode == true){
+						this.servicesStatus.pss.statusCode = this.WARNING;
+					}else{
+						this.servicesStatus.pss.statusCode = this.PROBLEM;
+					}
+				}else{
+					if(vm.systemServicesUI.pss.statusCode == true){
+						this.servicesStatus.pss.statusCode = this.OK;
+					}else{
+						this.servicesStatus.pss.statusCode = this.DANGER;
+					}
+				}
+
+				this.servicesStatus.pds.dbStatus = vm.systemServicesUI.pds.dbStatus; 
+
+				if(vm.systemServicesUI.pds.dbStatus == false){
+
+					if(vm.systemServicesUI.pds.statusCode == true){
+
+						this.servicesStatus.pds.statusCode = this.WARNING;
+					}else{
+
+						this.servicesStatus.pds.statusCode = this.PROBLEM;
+					}
+				}else{
+
+					if(vm.systemServicesUI.pds.statusCode == true){
+						this.servicesStatus.pds.statusCode = this.OK;
+					}else{
+						this.servicesStatus.pds.statusCode = this.DANGER;
+					}
+				}
+
+				
+			}
+		}
+	});
+
+</script>
+
+
+<%- include('../../layout/footer') %>

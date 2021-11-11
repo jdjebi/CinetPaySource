@@ -1,0 +1,75 @@
+<%- include('../layout/header'); -%>
+
+<div id="v-sync">
+  <div id="sync-messager" class="text-center alert alert-danger fw-bolder" style="display: none;">
+    Connexion au backend impossible
+  </div>
+</div>
+
+<div class="container">
+  <div id="v-app">
+
+    <div id="main-wrapper" class="d-none row justify-content-center mt-5">
+      <div class="col-sm-12">
+        <div class="text-center m-2 mb-4 fw-bolder">
+          <span class="border p-1 ps-3 pe-3 shadow" style="border-radius: 20px">
+            <span style="color: rgb(18,82,42);">Backoffice</span><span style="color: rgb(50,178,74);">Payout</span> 
+          </span>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-4 border p-4 rounded shadow">
+        
+        <div class="mb-4 text-center">
+          <h5>Connexion</h5>
+        </div>
+        <form v-on:submit.prevent="OnSubmit">
+          <div v-if="form.message.content" class="alert alert-danger alert-dismissible fade show small">
+            {{ form.message.content }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          <div class="mb-3">
+            <label for="username" class="form-label">Entrer votre identifiant</label>
+            <input v-model="form.username" name="username" type="text" class="form-control" id="username" placeholder="Identifiant">
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Entrer votre mot de passe</label>
+            <input v-model="form.password" name="password" type="password" class="form-control" id="password" placeholder="Mot de passe">
+          </div>
+          <div class="mb-3 d-grid">
+              <template v-if="!form.sending">
+                <button class="btn btn-success">Envoyer</button>
+              </template>
+              <template v-if="form.sending">
+                  <button disabled class="btn btn-success">
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      Envoyer
+                </button>
+              </template>
+          </div>
+        </form>  
+      </div>
+    </div>
+
+  </div>
+</div> 
+
+<%- include('../layout/scripts2'); -%>
+
+<script>
+  var errorMessage = "<%= error_msg %>";
+  var errorStatus = errorMessage ? errorMessage : false;
+</script>
+
+<script src="pages/auth/login.js"></script>
+
+<script type="text/javascript">
+
+var urls = <%- JSON.stringify(urls) %>; 
+
+var vm = loginPage(urls);
+
+var vsync = backendSync(urls);
+
+</script>
+
+<%- include('../layout/footer'); -%>

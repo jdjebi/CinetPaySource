@@ -1,0 +1,31 @@
+<script src='/static/vue/vue.js'></script>
+<script src="/static/axios/axios.min.js"></script>
+<script src="/static/nprogress/nprogress.js"></script>
+<script src="/static/dashboard/js/app.js"></script>
+<script src='/static/vue/vue-feather.min.js'></script>
+<script src='/static/alertify/alertify.min.js'></script>
+<script src='/static/alertify/alertify.min.js'></script>
+<script src="/static/jquery/jquery.min.js"></script>
+<script src="/static/socket.io/socket.io.min.js"></script>
+<script src="/static/loading/loading-bar.js"></script>
+<script src="/static/timeago/jquery.timeago.js"></script>
+<script src="/static/timeago/jquery.timeago.fr-short.js"></script>
+
+<script type="text/javascript">
+	Vue.component("vue-feather", VueFeather);
+	alertify.defaults.theme.ok = "btn btn-primary";
+	alertify.defaults.theme.cancel = "btn btn-success";
+	alertify.defaults.glossary.ok = "OUI";
+	alertify.defaults.glossary.cancel = "ANNULER";
+</script>
+<script type="text/javascript">
+
+jQuery(document).ready(function() {
+	setInterval(function(){
+		$("time.timeago").timeago();
+	})
+});
+
+ </script>
+<script src="/pages/lib/operators.js"></script>
+<script src="/pages/main.js"></script>

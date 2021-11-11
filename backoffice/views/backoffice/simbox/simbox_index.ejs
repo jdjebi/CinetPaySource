@@ -1,0 +1,190 @@
+<%- include('../../layout/header2') %>
+
+<style type="text/css">
+#simbox-card{
+    cursor: pointer;     
+}
+#simbox-card:hover{
+    border: 1px solid #198754 !important;   
+}
+
+.simbox-card-selected:hover{
+    border: 1px solid #198754 !important;   
+}
+</style>
+
+<div class="wrapper">   
+<%- include('../../layout/sidebar') %>
+    
+<div class="main">
+<%- include('../../layout/navbar') %>
+
+<main id="v-app" class="content p-0 border-top">
+
+<div class="container p-0">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-0 border-bottom">
+                <div class="card-header d-flex mt-1 align-items-center justify-content-between">
+                    <div>
+                        <h3>Gestion des SIMBOX</h3>
+                        <div class="text-muted fw-bolder">0 SIMBOX</div>
+                    </div>
+                    <div>
+                        <button v-on:click="openCreateSimboxModal" class="btn btn-success">Ajouter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <template v-if="simboxes.length > 0">  
+            <div class="col-lg-7 col-md-12 col-sm-12 ps-3">
+                <div id="simbox-card" v-on:click="selectSimbox(index,simbox)" v-for="(simbox, index) in simboxes" class="border shadow bg-white p-4 mt-2" v-bind:class="{'border-success': isSelected(index,simbox)}">  
+                    <div class="d-flex justify-content-between">
+                        <div class="h4">
+                            #{{ index + 1 }} <span class="fw-bolder me-2">{{ simbox.name }}</span> <i class="text-muted fa fa-sim-card"></i>
+                        </div>
+                        <div>
+                            <i v-show="simbox.active" class="fa fa-circle text-success"></i>
+                            <i v-show="!simbox.active" class="fa fa-circle text-danger"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="small text-muted">Numéro de série: {{ simbox.serialNumber }}</div>
+                    </div>
+                    <div class="mt-2 small">
+                        <span class="text-success fw-bolder"><i class="fa fa-link"></i> Url:</span> <span>{{ simbox.url }}</span>
+                    </div>
+                    <div class="mt-2">
+                        <div class="d-flex">
+                            <div class="me-5">  
+                                <div class="text-muted fw-bold">TOTAL PORTS</div>
+                                <div class="text-success fw-bolder">{{ simbox.totalPort }}</div>
+                            </div>
+                            <div class="me-5">  
+                                <div class="text-muted fw-bold">OCCUPES</div>
+                                <div class="text-success fw-bolder">0</div>
+                            </div>
+                            <div class="me-5">  
+                                <div class="text-muted fw-bold">LIBRES</div>
+                                <div class="text-success fw-bolder">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 col-md-12 offset-md-0 mt-2">
+                <div v-if="simboxIdSelected != null" class="bg-white border p-3 shadow">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3>{{ simboxes[simboxIdSelected].name }}</h3>
+                            <div class="small text-muted">Numéro de série: {{ simboxes[simboxIdSelected].serialNumber }}</div>
+                        </div>
+                        <div>
+                            <button class="btn btn-light border">Gérer</button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">                      
+                            <div>
+                                <i class="align-middle" data-feather="hard-drive" style="width: 70px; height: 70px"></i>
+                            </div>
+                            <div class="ms-2">
+                                <div class="h4 fw-bolder text-success">{{ simboxes[simboxIdSelected].totalPort }}</div>
+                                <div class="text-dark fw-bolder">PORTS</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="mb-3 text-success fw-bolder">
+                                <span class="badge bg-success">Opérationel</span>
+                            </div>
+
+                            <div v-if="!simboxes[simboxIdSelected].active" v-on:click="toggleSimboxActivation(simboxes[simboxIdSelected])" class="small text-center text-danger fw-bolder">
+                                <div><i class="fa fa-power-off"></i></div>
+                                <div>Désactiver</div>
+                            </div>
+                            <div v-else v-on:click="toggleSimboxActivation(simboxes[simboxIdSelected])" class="text-success text-center">
+                                <div><i class="fa fa-power-off"></i></div>
+                                <div>Activer</div>      
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div>
+                        <div class="text-dark fw-bolder">Description</div>
+                        <div class="mt-1">
+                            {{ simboxes[simboxIdSelected].description }}
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="text-dark fw-bolder">Url</div>
+                        <div class="mt-1">
+                            <span class="text-muted">
+                                <i class="fa fa-link"></i> {{ simboxes[simboxIdSelected].url }}
+                            </span>  
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="text-dark fw-bolder">IP Internet</div>
+                        <div class="mt-1">
+                            <span class="text-muted"><i class="fa fa-globe"></i> {{ simboxes[simboxIdSelected].internetIp }}</span>  
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="text-dark fw-bolder">IP local</div>
+                        <div class="mt-1">
+                            <span class="text-muted"><i class="fa fa-globe"></i> {{ simboxes[simboxIdSelected].localIp }}</span>  
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="text-dark fw-bolder">Mot de passe</div>
+                        <div class="mt-1">
+                            <span class="text-muted">
+                                <i class="fa fa-lock"></i> {{ simboxes[simboxIdSelected].password }}
+                            </span>  
+                        </div>
+                    </div>
+                </div>
+                <div v-else>
+                    <div class="border rounded border-dotted text-muted text-center p-5" style="border-style: dashed solid !important;">
+                        <div><i class="align-middle" data-feather="hard-drive"></i></div>
+                        <h5 class="text-muted mt-2">Aucune SIMBOX sélectionnée</h5>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template v-else>
+            <div class="mt-5 text-center">
+                <div>
+                    <i class="align-middle text-muted" data-feather="hard-drive" style="width: 50px; height: 50px"></i>
+                </div>
+                <h2 class="mt-2 text-muted">Aucune SIMBOX</h2>
+            </div>
+        </template>
+    </div>
+</div>
+
+<%- include('modalFormCreateSimbox') %>
+
+</main>
+</div>
+</div>
+<%- include('../../layout/scripts2') %>
+<script src="/pages/backoffice-v1/simbox/simbox_index.vue.js"></script>
+<script type="text/javascript">
+
+var vm = simboxIndexPage({
+    urls:{
+        simboxesUrls: <%- JSON.stringify(urls.simboxesUrls) %>
+    }
+});
+ 
+</script>
+
+<script type="text/javascript">
+    
+</script>
+<%- include('../../layout/footer') %>
+    

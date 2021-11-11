@@ -1,0 +1,203 @@
+version: '3'
+
+services:
+
+  # Base de donnees
+
+    postgres:
+      container_name: postgres
+      image: postgres
+      restart: always
+      ports:
+        - "5433:5432"
+      environment: 
+        POSTGRES_PASSWORD: 123
+    
+    ## Postgres Web View
+    adminer:
+      container_name: adminer
+      image: adminer
+      restart: always
+      ports: 
+        - "9100:8080"
+
+    mongo:
+      container_name: mongo
+      image: mongo
+      restart: always
+      ports:
+        - "27018:27017"
+
+    mongo-eventlog:
+      container_name: mongo-eventlog
+      image: mongo
+      restart: always
+      ports:
+        - "27019:27017"
+    
+  # Apache Kafka
+
+    zookeeper:
+      image: zookeeper
+      container_name: zookeeper
+      hostname: zookeeper
+      restart: always
+      ports:
+        - "2181:2181"
+      environment: 
+        ZOO_MY_ID: 1
+
+    kafka:
+      image: 'bitnami/kafka:latest'
+      container_name: kafka 
+      hostname: kafka
+      restart: always
+      depends_on: 
+        - zookeeper
+      ports: 
+        - "9092:9092"
+      environment: 
+        KAFKA_BROKER_ID: 1
+        KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+        ALLOW_PLAINTEXT_LISTENER: "yes"
+
+  # Interface web du backoffice
+
+    backoffice-front-service:
+      container_name: backoffice-front-service
+      restart: always
+      depends_on: 
+        - postgres
+      build: ./backoffice
+      ports:
+        - "3000:3000"
+      environment: 
+        DATABASE_HOST: ${POSTGRES_HOST}
+        API_BACKOFFICE_HOST: ${API_BACKOFFICE_HOST}
+        EVENTLOG_HOST: ${EVENTLOG_HOST}
+        GATEWAY_HOST: ${GATEWAY_HOST}
+        DISPATCHER_HOST: ${DISPATCHER_HOST}
+        API_TRANSFERT_SERVICE_HOST: ${API_TRANSFERT_SERVICE_HOST}
+        SIM_TRANSFERT_SERVICE_HOST: ${SIM_TRANSFERT_SERVICE_HOST}
+        NOTIFICATION_HOST: ${NOTIFICATION_HOST}
+        API_BACKOFFICE_BACKEND_HOST: ${API_BACKOFFICE_BACKEND_HOST}
+    
+  # Services
+
+    ## API du backoffice
+    api-backoffice:
+      container_name: api-backoffice
+      restart: always
+      depends_on: 
+        - postgres
+        - kafka
+      build: ./spring/api-backoffice
+      ports: 
+        - "8060:8060"
+      environment: 
+        SPRING_PROFILES_ACTIVE: prod
+        KAFKA_HTTP_HOST: ${KAFKA_HTTP_HOST}
+        POSTGRES_HOST: ${POSTGRES_HOST}
+        POSTGRES_DATABASE_USERNAME: ${POSTGRES_DATABASE_USERNAME}
+        POSTGRES_DATABASE_PASSWORD: ${POSTGRES_DATABASE_PASSWORD}
+        POSTGRES_DATABASE_NAME: ${POSTGRES_DATABASE_NAME}
+        POSTGRES_DATABASE_PORT: ${POSTGRES_DATABASE_PORT}
+        EVENTLOG_HOST: ${EVENTLOG_BACKEND_HOST}
+        GATEWAY_HOST: ${GATEWAY_BACKEND_HOST}
+        DISPATCHER_HOST: ${DISPATCHER_BACKEND_HOST}
+        NOTIFICATION_HOST: ${NOTIFICATION_BACKEND_HOST}
+    
+    ## Service de journalisation
+    eventlog:
+      container_name: eventlog
+      restart: always
+      depends_on: 
+        - kafka
+        - mongo-eventlog
+      build: ./spring/eventlog-service
+      ports: 
+        - "8061:8061"
+      environment: 
+        SPRING_PROFILES_ACTIVE: prod
+        KAFKA_HTTP_HOST: ${KAFKA_HTTP_HOST}
+        MONGO_HOST: ${MONGO_EVENTLOG_HOST}
+        MONGO_DATABASE_NAME: eventlog # UNIQUE
+        MONGO_DATABASE_PORT: ${MONGO_EVENTLOG_DATABASE_PORT}
+
+    ## Service de journalisation
+    gateway:
+      container_name: gateway
+      restart: always
+      depends_on: 
+        - kafka
+        - mongo
+      build: ./spring/psg
+      ports: 
+        - "8070:8070"
+      environment: 
+        SPRING_PROFILES_ACTIVE: prod
+        KAFKA_HTTP_HOST: ${KAFKA_HTTP_HOST}
+        MONGO_HOST: ${MONGO_HOST}
+        MONGO_DATABASE_NAME: cinetpay # UNIQUE
+        MONGO_DATABASE_PORT: ${MONGO_DATABASE_PORT}
+    
+    ## Service de repartition
+    dispatcher:
+      container_name: dispatcher
+      restart: always
+      depends_on: 
+        - kafka
+        - mongo
+      build: ./spring/dispatcher2-service
+      ports: 
+        - "8090:8090"
+      environment: 
+        SPRING_PROFILES_ACTIVE: prod
+        KAFKA_HTTP_HOST: ${KAFKA_HTTP_HOST}
+        MONGO_HOST: ${MONGO_HOST}
+        MONGO_DATABASE_NAME: dispatcher # UNIQUE
+        MONGO_DATABASE_PORT: ${MONGO_DATABASE_PORT}
+    
+    ## Service de transfert
+    transfert-service:
+      container_name: transfert-service
+      restart: always
+      depends_on: 
+        - kafka
+        - mongo
+      build: ./spring/transfert-service
+      ports: 
+        - "8095:8095"
+      environment: 
+        SPRING_PROFILES_ACTIVE: prod
+        KAFKA_HTTP_HOST: ${KAFKA_HTTP_HOST}
+        MONGO_HOST: ${MONGO_HOST}
+        MONGO_DATABASE_NAME: api_transfert_service # UNIQUE
+        MONGO_DATABASE_PORT: ${MONGO_DATABASE_PORT}
+    
+    ## Operateur virtuelle
+    operator-service:
+      container_name: operator-service
+      restart: always
+      build: ./spring/operator-service
+      ports: 
+        - "8096:8096"
+      environment: 
+        SPRING_PROFILES_ACTIVE: prod
+  
+    ## Service de notification
+    notification:
+      container_name: notification
+      restart: always
+      depends_on: 
+        - kafka
+        - mongo
+      build: ./spring/notification-service
+      ports: 
+        - "8097:8097"
+      environment: 
+        SPRING_PROFILES_ACTIVE: prod
+        KAFKA_HTTP_HOST: ${KAFKA_HTTP_HOST}
+        MONGO_HOST: ${MONGO_HOST}
+        MONGO_DATABASE_NAME: cinetpay # UNIQUE
+        MONGO_DATABASE_PORT: ${MONGO_DATABASE_PORT}

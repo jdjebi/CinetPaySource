@@ -1,0 +1,34 @@
+<div class="modal fade" id="formEditOperator" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form v-on:submit.prevent="editCountry">
+                <div class="modal-header ">
+                    <h4 class="modal-title fw-bold">Modification</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="mb-2">
+                        <label class="form-label">Nom</label>
+                        <input type="text" v-model="form.country.name" class="form-control form-control-lg">
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Code</label>
+                        <input type="text" v-model="form.country.code" class="form-control form-control-lg">
+                    </div>
+
+                    <div>
+                        <label class="form-label">Devise</label>
+                        <select class="form-select" v-model="form.country.currency.id" class="form-control" name="currency">
+                            <option v-for="currency in currencies" v-bind:value="currency.id" v-text="currency.name"></option> 
+                        </select>   
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button class="btn btn-success">Envoyer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,341 @@
+<%- include('../../../layout/header2') %>
+
+<div class="wrapper"> 
+<%- include('../../../layout/sidebar') %>
+<div class="main">
+
+<style type="text/css">
+  main{
+    background-color: #fff;
+  }
+
+  .transaction-box{
+    overflow-y: scroll;
+    padding-bottom: 20px
+  }
+
+  .events-box{
+    width: 600px;
+    height: 82vh;
+  }
+
+  .events-box-body{
+    overflow-y: scroll;
+    height: 90.3%;
+  }
+
+  .event-data-console{
+    background: #eee;
+    padding: 10px;
+    border-radius: 5px;
+  }
+</style>
+
+<%- include('transactions_css') %>
+
+<%- include('../../../layout/navbar') %>
+
+<main id="v-app" class="content p-0 position-relative border-top">
+
+    <div id="main-wrapper" class="d-none"> 
+
+      <div class="bg-white ps-3 pt-3 pe-3 pb-2 mb-2 d-flex justify-content-between">
+        <div>
+          <div class="h3 mb-0">
+            <a href="/backoffice/transactions">
+              <i class="fa fa-arrow-left text-muted"></i></a> Gestion des transactions / 
+            <span class="small text-dark">Transaction #{{ transactionId }}</span> 
+          </div>
+        </div>
+        <div v-if="transaction">
+          <span class="badge small" v-bind:class="[getTransactionStatusStyleBadgeBackgroundClass(transaction.status)]">
+            {{ translateTransactionStatus(transaction.status) }}
+          </span>
+        </div>
+      </div>
+
+      <div v-if="transaction" class="border-top d-flex position-relative" style="height: 81vh;">
+
+        <div class="transaction-box" style="width: 100%">
+
+          <div class="d-flex border-bottom">
+            <div v-on:click="displayResume" class="trx-menu-item border-end">
+              <a href="javascript:void(0)"> <i class="fa fa-file-invoice-dollar"></i> Transaction</a>
+            </div>
+            <div v-on:click="displayEventsDetails" class="trx-menu-item border-end">
+              <a href="javascript:void(0)"> 
+                <i class="fa fa-tasks"></i> 
+                Evènements &nbsp; <span class="badge bg-success align-middle" style="position: relative; top: -1px;">{{ events.length }}</span>
+              </a>
+            </div>
+            <div class="trx-menu-item border-end">
+              <a href="javascript:void(0)"><i class="fa fa-chart-bar"></i> Statistiques</a>
+            </div>
+          </div>
+
+          <div>
+            <div v-if="showResume">
+              <%- include('show/resume') %>
+            </div>
+            <div v-if="showEventsDetails">
+              <%- include('show/events') %>
+            </div>
+          </div>
+
+        </div>
+        <div class="events-box border-start">
+
+          <div class="events-box-header border-bottom fw-bold" style="padding: 10px"> Evènements</div>
+
+          <div class="events-box-body"> 
+
+            <div v-for="(event,index) in events" class="event p-3 border-bottom">
+              <div class="mb-2 d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                  #{{ index + 1}} {{ event.action }}
+                </div>
+                <div class="pe-3">
+                  <span class="badge" v-bind:class="[translateEventTag(event.strictType)]">{{ event.strictType }}</span>
+                  <span class="badge" v-bind:class="[translateEventTag(event.loggingLevel)]">{{ event.loggingLevel }}</span>
+                </div>
+              </div>
+              <div class="small text-muted">
+                <i class="far fa-clock text-success"></i> &nbsp;&nbsp; {{ event.date }}
+              </div>
+              <div class="small mt-1">
+                <span class="fw-bold text-success">Ser.: </span> {{ event.originService }}
+              </div>
+              <div class="small mt-1">
+                <span class="fw-bold text-success">Ref: </span> {{ event.entityRef }}
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <%- include('show/modals') %>
+
+</main>
+</div>
+</div>
+
+<%- include('../../../layout/scripts2') %>
+
+<script src="/pages/backoffice-v1/operators/operators_helpers.js"></script>
+
+<script type="text/javascript">
+
+var settingModal = null;
+  
+function TransactionShow(data){
+
+  return new Vue({
+
+    el:"#v-app",
+
+    data:{
+
+      urls: data.urls,
+
+      transactionId: data.transactionId,
+
+      transaction: null,
+
+      events: [],
+
+      newStatus: null,
+
+      showResume: true,
+
+      showEventsDetails: false,
+
+      updatingTransactionStatus: false
+
+    },
+
+    mounted: function(){
+
+      this.initModal();
+
+      this.getTransaction();
+
+      this.showMainWrapp();
+
+    },
+
+    methods:{
+
+      showMainWrapp(){
+        $("#main-wrapper").removeClass("d-none");
+      },
+
+      initModal: function(){
+
+        settingModalElement = document.getElementById('settingsModal');
+        settingModal = new bootstrap.Modal(settingModalElement,{});
+        
+      },
+
+      getTransactionRequest: function(){
+        return axios.get(this.urls.services.gateway.transactions.findByTransactionId + this.transactionId);
+      },
+
+      updateTransactionStatusRequest: function(trxId,status){
+        data = {
+          status:status
+        };
+        return axios.patch(this.urls.services.gateway.transactions.updateStatus + trxId,data);
+      },
+
+      getTransaction: function(){
+        NProgress.start();
+
+        var vm = this;
+
+        axios.all([this.getTransactionRequest(), this.getEvents()])
+          .then(function(result){
+            transaction = result[0].data;
+            events = result[1].data;
+            vm.updateTransaction(transaction, events);
+          })  
+          .catch(function(error){
+            console.log(error.message);
+            alertify.error("Une érreur c'est produite");
+          })
+          .then(function(){
+            NProgress.done();
+          });
+      },
+
+      getEvents: function(){
+        return axios.get(this.urls.services.eventlog.get.entityref + this.transactionId + "?orderby=asc");
+      },
+
+      updateTransaction(transaction, events){
+        this.transaction = transaction;
+        this.newStatus = this.transaction.status;
+        this.events = events;
+      },
+
+      displayResume: function(){
+        this.showResume = true;
+        this.showEventsDetails = false;
+      },
+
+      displayEventsDetails: function(){
+        this.showResume = false;
+        this.showEventsDetails = true;
+      },
+
+      translateTransactionStatus: function(status){
+        if(status == "REC"){
+          return "EN COURS";
+        } else if(status == "PAUSE"){
+          return "EN PAUSE";
+        } else if(status == "PAILURE"){
+          return "ECHEC";
+        }else if(status == "SUCCESS"){
+          return "SUCCESS";
+        }else{
+          return status;
+        }
+      },
+
+      getTransactionStatusStyleBadgeBackgroundClass: function(status){
+        if(status == "REC"){
+          return "bg-primary";
+        } else if(status == "PAUSE"){
+          return "bg-warning";
+        } else if(status == "REJ"){
+          return "bg-danger";
+        }else if(status == "SUCCESS"){
+          return "bg-success";
+        }else if(status == "FAILURE"){
+          return "bg-danger";
+        }else{
+          return "bg-dark";
+        }
+      },
+
+      translateEventTag: function(status){
+        if(status == "INFO"){
+          return "bg-primary";
+        } else if(status == "WARNING"){
+          return "bg-warning";
+        } else if(status == "ERROR"){
+          return "bg-danger";
+        }else if(status == "LOG"){
+          return "bg-secondary";
+        }else if(status == "EVENT"){
+          return "bg-success";
+        }else{
+          return "bg-primary";
+        }
+      },
+
+      getOperatorLogo: function(logoUrl){
+          return operatorLogoHelper(logoUrl);
+      },
+
+      getOperatorCountryLogo: function(countryCode){
+          return getOperatorCountryLogo(countryCode);
+      },
+    
+      reverseArr: function(input) {
+          var ret = new Array;
+          for(var i = input.length-1; i >= 0; i--) {
+              ret.push(input[i]);
+          }
+          return ret;
+      },
+    
+      openSettings: function(){
+        settingModal.show();  
+      },   
+    
+      updateTransactionStatus: function(){
+        
+        this.updatingTransactionStatus = true;
+
+        NProgress.start();
+
+        var vm = this;
+
+        this.updateTransactionStatusRequest(transactionId,this.newStatus)
+          .then(function(response){
+            console.log(response.data);
+            alertify.success("Statut mis à jour");
+            vm.updatingTransactionStatus = false;
+            vm.transaction.status = vm.newStatus;
+          })
+          .catch(function(error){
+            console.log(error.message);
+            alertify.error("Une erreur c'est produite.");
+          })
+          .then(function(){
+            NProgress.done();
+            vm.updatingTransactionStatus = false;
+          });
+
+      },
+
+    }
+
+  });
+
+}
+
+var urls = <%- JSON.stringify(urls) %>;
+var transactionId = "<%- transactionId %>";
+
+var vm = TransactionShow({
+  urls:urls,
+  transactionId:transactionId
+});
+
+</script>

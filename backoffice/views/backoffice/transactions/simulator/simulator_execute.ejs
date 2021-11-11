@@ -1,0 +1,45 @@
+<template v-if="getSelectedSimulation().simulationStarted">
+
+	<template v-if="getSelectedSimulation().executing">
+		<div class="text-center">
+			<div>
+				<img src="/static/images/ripple.svg">
+			</div>
+			<div class="h4 text-muted">
+				Traitement de la simulation {{ getSelectedSimulation().id }} en cours
+			</div>
+			<div class="fw-bold h4 text-success mt-1">
+				{{ getSelectedStats().percent }}%
+			</div>
+		</div>
+	</template>
+
+	<template v-if="getSelectedSimulation().simulationFinished">
+		<div class="mt-5 text-center">
+			<div class="mb-4">
+				<span class=""><i class="fa fa-flag h1 text-success"></i></span>
+			</div>
+			<div class="h3 text-dark">
+				<div>Traitement des transactions terminées !</div>
+				<div v-if="getSelectedSimulation().duration == null" class="small text-muted mt-1">
+					Calcul de la durée en cours...
+				</div>
+				<div v-if="getSelectedSimulation().duration != null" class="text-success mt-1">
+					{{ getSelectedSimulation().duration }} ms
+				</div>
+			</div>
+			<div class="mt-4">
+				<button v-if="getSelectedSimulation().newTransactionCollected" v-on:click="showResults" class="btn btn-lg btn-success">Voir les résultats</button>
+			</div>
+		</div>
+	</template>
+
+</template>
+
+<template v-else>
+
+	<div class="text-center h3 mt-5 text-muted pt-5">
+		La simulation n'a pas encore été exécutée		
+	</div>
+	
+</template>

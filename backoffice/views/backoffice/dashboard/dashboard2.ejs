@@ -1,0 +1,68 @@
+	
+	<div class="row">
+		<div class="col-12">
+			<h2>Tableau de bord</h2>
+		</div>
+	</div>
+	
+	<div v-show="showPage" class="row mt-3" style="display: none;">
+		<div class="col-md-4 col-sm-12 mb-1">
+			<div class="bg-white border rounded shadow">
+				<div class="p-3">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<div class="fw-bolder" style="font-size: 25px"><i class="fa fa-hdd"></i> PSS</div>
+							<small class="text-muted">Payout Supervisor Service</small>
+						</div>
+						<div class="d-flex align-items-center">
+							<div v-if="servicesStatus.pss.statusCode == null" class="text-muted fw-bold ">???</div>
+							<div v-if="servicesStatus.pss.statusCode == 0" class="text-danger fw-bold ">PROBLEM</div>
+							<div v-if="servicesStatus.pss.statusCode == 1" class="text-success fw-bold ">RUNNING</div>
+							<div v-if="servicesStatus.pss.statusCode == 2" class="text-warning fw-bold ">RUNNING</div>	
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4 col-sm-12 mb-1">
+			<div class="bg-white border rounded shadow">
+				<div class="p-3">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<div class="fw-bolder" style="font-size: 25px"><i class="far fa-hdd"></i> PSG</div>
+							<small class="text-muted">Payout Gateway Service</small>
+						</div>
+						<div class="d-flex align-items-center">
+							<div v-if="servicesStatus.psg.statusCode == 0" class="text-danger fw-bold">PROBLEM</div>
+							<div v-else-if="servicesStatus.psg.statusCode == 1" class="text-success fw-bold">RUNNING</div>
+							<div v-else-if="servicesStatus.psg.statusCode == 2" class="text-warning fw-bold">RUNNING</div>
+							<div v-else="servicesStatus.psg.statusCode == null" class="text-muted fw-bold">???</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4 col-sm-12 mb-1">
+			<div class="bg-white border rounded shadow">
+				<div class="p-3">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<div class="fw-bolder" style="font-size: 25px"><i class="far fa-hdd"></i> PDS</div>
+							<small class="text-muted">Payout Dispatch Service</small>
+						</div>
+						<div class="d-flex align-items-center">
+							<div v-if="servicesStatus.pds.statusCode == null" class="text-muted fw-bold ">???</div>
+							<div v-if="servicesStatus.pds.statusCode == 0" class="text-danger fw-bold ">PROBLEM</div>
+							<div v-if="servicesStatus.pds.statusCode == 1" class="text-success fw-bold ">RUNNING</div>
+							<div v-if="servicesStatus.pds.statusCode == 2" class="text-warning fw-bold ">RUNNING</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+		
+
+		
+	</div>

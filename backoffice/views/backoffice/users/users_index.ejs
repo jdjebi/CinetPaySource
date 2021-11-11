@@ -1,0 +1,74 @@
+<%- include('../../layout/header2') %>
+<div class="wrapper">	
+<%- include('../../layout/sidebar') %>
+<div class="main">
+<%- include('../../layout/navbar') %>
+
+<main id="v-app" class="content p-0">
+
+<div id="main-wrapper" class="d-none">
+    <div class="border-top row">
+        <div class="col-12">
+            <div class="card rounded-0">
+                <div class="card-header d-flex mt-1 align-items-center justify-content-between">
+                    <div>
+                        <h3>Gestion des utilisateurs</h3>
+                        <div class="text-muted fw-bolder">{{ users.length }} utilisateurs</div>
+                    </div>
+                    <div>
+                        <button v-on:click="openCreateUserModal" class="btn btn-lg btn-success">Nouvelle utilisateur</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="border-top table table-striped table-hover my-0">
+                        <thead>
+                            <tr>
+                                <th>N°</th>
+                                <th>Nom utilisateur</th>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Role</th>
+                                <th>Date dernière connexion</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(user,index) in users">
+                                <td>{{ index + 1 }}</td>
+                                <td class="fw-bolder">{{ user.username }}</td>
+                                <td class="text-muted">{{ user.id }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.surname }}</td>
+                                <td>
+                                    <span class="badge bg-success">{{ user.role }}</span>
+                                </td>
+                                <td>{{ user.lastConnexion }}</td>
+                                <td class="text-end">
+                                    <a v-bind:href="urls.backoffice.users.show + user.id" class="btn btn-success btn-sm">Consulter</a>
+                                    <span class="btn btn-light btn-sm border">Modifier</span>
+                                    <span v-on:click="deleteUser(user.id,index)" class="btn btn-danger btn-sm">Supprimer</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('modal_createUser') %>
+</main>
+</div>
+</div>
+<%- include('../../layout/scripts2') %>
+<script src="/pages/backoffice-v1/users/users_index.vue.js"></script>
+
+<script>
+    var vm = UsersPage({
+        urls:<%- JSON.stringify(urls) %>,
+    });
+</script>
+
+<%- include('../../layout/footer') %>
+	

@@ -1,0 +1,97 @@
+<div v-if="getSelectedSimulation().newTransactionCollected == true"  class="container">
+	
+<div class="row mt-2  align-items-center">
+	<div class="col-md-6 col-sm-12">
+		<div class="row">
+			<div class="col-sm-12">
+				<span class="h3 p-2 pb-2">Bilan des status finaux</span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6">
+				<div class="rpp-card p-4 m-2">
+					<div class="val text-success">{{ getSelectedSimulation().previousStats.success }}</div>
+					<div class="sep"></div>	
+					<div class="label">Réussies</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="rpp-card p-4 m-2">
+					<div class="val text-danger">{{ getSelectedSimulation().previousStats.failure }}</div>
+					<div class="sep"></div>	
+					<div class="label">Echouée</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6">
+				<div class="rpp-card p-4 m-2">
+					<div class="val text-warning">{{ getSelectedSimulation().previousStats.pause }}</div>
+					<div class="sep"></div>	
+					<div class="label">Pause</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="rpp-card p-4 m-2">
+					<div class="val text-secondary"><i class="far fa-clock"></i>&nbsp; {{ getSelectedSimulation().duration }} ms</div>
+					<div class="sep"></div>	
+					<div class="label fw-bolder text-secondary">Durée</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6 col-sm-12">
+		<div>
+			<div>
+				<canvas id="myChart"></canvas>
+			</div>
+		</div>
+	</div>
+</div>
+
+<hr>
+
+<div class="row mt-2  align-items-center">
+	<div class="col-md-5 col-sm-12">
+		<div class="row">
+			<div class="col-sm-12">
+				<span class="h3 p-2 pb-2">Bilan temporel</span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6">
+				<div class="rpp-card p-4 m-2">
+					<div class="val text-success">{{ getSelectedSimulation().previousStats.minProcessDuration }} ms</div>
+					<div class="sep"></div>	
+					<div class="label">Meilleur temps</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="rpp-card p-4 m-2">
+					<div class="val text-danger">{{ getSelectedSimulation().previousStats.maxProcessDuration }} ms</div>
+					<div class="sep"></div>	
+					<div class="label">Temps maximal</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="rpp-card p-4 m-2">
+					<div class="val text-primary">{{ getSelectedSimulation().previousStats.avgProcessDuration }} ms</div>
+					<div class="sep"></div>	
+					<div class="label">Temps moyen</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-7 col-sm-12">
+		<div>
+			<div>
+				<canvas id="durationChart"></canvas>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+</div>

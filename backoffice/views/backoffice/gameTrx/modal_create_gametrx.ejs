@@ -1,0 +1,61 @@
+<div class="modal fade" id="new-game-trx" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form v-on:submit.prevent="FormGameTrxOnSubmit">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Nouveau jeu de transactions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div v-if="form.gameTrx.message.content" class="alert alert-danger alert-dismissible fade show">
+                        {{ form.gameTrx.message.content }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <div class="mb-3">
+                        <label class="col-form-label">Titre:</label>
+                        <input v-model="form.gameTrx.title" type="text" class="form-control" name="title">
+                    </div>
+                    <div class="mb-3">
+                        <label class="col-form-label">Nombre de transactions:</label>
+                        <input v-model="form.gameTrx.numbertrx" type="number" class="form-control" name="numbertrx">
+                    </div>  
+                    <div class="mb-3">
+                        <label class="col-form-label">Moyen de paiement:</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input v-model="form.gameTrx.paymentmethod" value="API" class="form-check-input" type="radio" name="paymentmethod" id="flexRadioDefault1" checked>
+                                <label class="form-check-label" for="flexRadioDefault1">
+                                    API
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input v-model="form.gameTrx.paymentmethod" value="SIM" class="form-check-input" type="radio" name="paymentmethod" id="flexRadioDefault2">
+                                <label class="form-check-label" for="flexRadioDefault2">
+                                    SIM
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input v-model="form.gameTrx.paymentmethod" value="AUTO" class="form-check-input" type="radio" name="paymentmethod" id="flexRadioDefault3">
+                                <label class="form-check-label" for="flexRadioDefault3">
+                                    Automatique
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="col-form-label">Pays:</label>
+                        <select v-model="form.gameTrx.country" class="form-control" name="country">
+                            <option value="CI">Côte d'Ivoire</option>
+                            <option value="ML">Mali</option>
+                            <option value="SN">Sénégale</option>
+                            <option value="CM">Cameroun</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

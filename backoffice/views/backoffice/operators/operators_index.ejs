@@ -1,0 +1,98 @@
+<%- include('../../layout/header2') %>
+<div class="wrapper">	
+<%- include('../../layout/sidebar') %>
+<div class="main">
+<%- include('../../layout/navbar') %>
+
+<main id="v-app" class="content p-0">
+
+<div id="main-wrapper" class="d-none">
+    <div class="border-top row">
+        <div class="col-12">
+            <div class="card rounded-0">
+                <div class="card-header d-flex mt-1 align-items-center justify-content-between">
+                    <div>
+                        <h3>Gestion des opérateurs</h3>
+                        <div class="text-muted fw-bolder">{{ operators.length }} opérateurs</div>
+                    </div>
+                    <div>
+                        <button v-on:click="createOperator" class="btn btn-lg btn-success">Créer opérateur</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="border-top table table-striped table-hover my-0">
+                        <thead>
+                            <tr>
+                                <th>N°</th>
+                                <th>Nom</th>
+                                <th>Alias</th>
+                                <th>Pays</th>
+                                <th>Code pays</th>
+                                <th>Devise</th>
+                                <th>Ressources</th>
+                                <th>Service</th>
+                                <th>Méthodes</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(operator,index) in operators">
+                                <td>{{ index + 1 }}</td>
+                                <td class="fw-bolder text-success position-relative">
+                                    <img class="me-2 rounded circle align-middle border" v-bind:src="getOperatorLogo(operator.logo)" style="width: 30px" alt="Logo de l'opérateur">
+
+                                    <div 
+                                        class="audit-status"     
+                                        v-bind:class="[{'audit-status-success': auditOperator(operator).status}, {'audit-status-warning': (!auditOperator(operator).status)}]"
+                                        style="top: 10px; left: 9px;"
+                                    >
+                                    </div>
+                                    
+                                    {{ operator.name }}
+                                </td>
+                                <td>{{ operator.alias }}</td>
+                                <td>
+                                    <img class="me-2" v-bind:src="getOperatorCountryLogo(operator.country.code)" style="width: 22px" alt="Logo du pays">
+                                    {{ operator.country ? operator.country.name : "" }}
+                                </td>
+                                <td>{{ operator.country ? operator.country.code : "" }}</td>
+                                <td>{{ operator.country ? operator.country.currency.name : "" }}</td>
+                                <td>{{ getOperatorCountResource(operator.resources) }}</td>
+                                <td>{{ getCountService(operator) }}</td>
+                                <td>
+                                    <span v-if="operator.useApi" class="badge bg-success">API</span>
+                                    <span v-if="operator.useSIM" class="badge bg-success">SIM</span>
+                                </td>
+                                <td class="text-end">
+
+                                    <a v-bind:href="urls.operators.show + operator.id" class="btn btn-sm btn-success">Gérer</a>
+
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('modal_formCreateOperator'); -%>
+<%- include('../gameTrx/toasts'); -%>
+<%- include('toastsError'); -%>
+
+</main>
+</div>
+</div>
+<%- include('../../layout/scripts2') %>
+<script src="/pages/backoffice-v1/operators/operators_index.vue.js"></script>
+<script src="/pages/backoffice-v1/operators/operators_helpers.js"></script>
+
+<script>
+    var vm = OperatorsPage({
+        countriesUrls:<%- JSON.stringify(countriesUrls) %>,
+        operatorsUrls:<%- JSON.stringify(operatorsUrls) %>,
+    });
+</script>
+<%- include('../../layout/footer') %>
+	

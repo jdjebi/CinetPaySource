@@ -1,0 +1,80 @@
+<%- include('../../layout/header2') %>
+<div class="wrapper">	
+<%- include('../../layout/sidebar') %>
+<div class="main">
+<%- include('../../layout/navbar') %>
+<main id="v-app" class="content p-0">
+
+<div class="">
+    <div id="main-wrapper" class="d-none border-top row">
+        <div class="col-12">
+            <div class="card rounded-0">
+                <div class="card-header d-flex mt-1 align-items-center justify-content-between">
+                    <div>
+                        <h2 >Gestion des services</h2>
+                        <div class="text-muted fw-bolder">{{ services.length }} services</div>
+                    </div>
+                    <div>
+                        <button v-on:click="createService" class="btn btn-lg btn-success">Nouveau service de transfert</button>
+                    </div>
+                </div>
+                <table class="border-top table table-striped table-hover my-0">
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Nom</th>
+                            <th>Alias</th>
+                            <th>Code</th>
+                            <th>Type</th>
+                            <th>Rôle</th>
+                            <th>Opérateur</th>
+                            <th class="text-center">Active</th>
+                            <th>Statut</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(service,index) in services">
+                            <td>{{ index + 1 }}</td>
+                            <td class="fw-bolder">{{ service.name }}</td>
+                            <td>{{ service.minName }}</td>
+                            <td>{{ service.code }}</td>
+                            <td>
+                                <span class="badge bg-info">
+                                    <template v-if='service.type'>
+                                        {{ service.type }}
+                                    </template>
+                                </span>
+                            </td>
+                            <td class="text-dark fw-bolder">{{ service.role }}</td>
+                            <td></td>
+                            <td class="text-center">
+                                <i class="fa fa-circle" v-bind:class="{ 'text-danger': !service.active, 'text-success': service.active }"></i>
+                            </td>
+                            <td>
+                                <span v-if="service.status" class="badge bg-success">RUNNING</span>
+                                <span v-else class="badge bg-danger">STOPPED</span>
+                            </td>
+                            <td class="text-center">
+                                <a v-bind:href="getServiceShowUrls(service,urls)" class="btn btn-success btn-sm">Gérer</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</main>
+</div>
+</div>
+<%- include('../../layout/scripts2') %>
+<script src="/pages/backoffice-v1/services/services_tools.js"></script>
+<script src="/pages/backoffice-v1/services/services_index.vue.js"></script>
+<script>
+    var vm = ServicesPage({
+        servicesUrls:<%- JSON.stringify(urls.servicesUrls) %>,
+    });
+</script>
+<%- include('../../layout/footer') %>

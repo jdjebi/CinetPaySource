@@ -1,0 +1,70 @@
+<div class="row">
+    <div class="col-md-8">
+        <div class="shadow-sm bg-white">
+            <div class="h5 fw-bolder p-3">
+                Dernières transactions
+            </div>
+            <div class="border-top" style="height: 450px; overflow-y: scroll;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>ID</th>
+                            <th>Montant</th>
+                            <th>Statut</th>
+                            <th>Date de creation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(transaction, index) in lastTransactions">
+                            <td>{{ index + 1 }}</td>
+                            <td>
+                                <a 
+                                    class="text-dark"
+                                    v-bind:href="urlsPack.backoffice.transactions.showTransaction + transaction.transactionId"
+                                >
+                                   <span>{{ transaction.transactionId }}</span>
+                                </a>
+                            </td>
+                            <td>{{ transaction.amount }}</td>
+                            <td>
+                                <span class="badge" v-bind:class="getTrxStatusBgClass(transaction.status)">{{ transaction.status }}</span>
+                            </td>
+                            <td class="small">{{ transaction.createdAt }}</td>
+                        </tr>
+                    </tbody>
+                </table>    
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="bg-white shadow-sm">
+            <div class="p-3 border-bottom">
+                <h5 class="fw-bolder">TOP 10 des derniers évènements</h5>
+            </div>
+            <div style="height: 300px; overflow-y: scroll;">
+                <div v-for="(event, index) in events">
+                    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+                        <div style="width: 99%;">
+                            <div v-bind:title="event.action" class="event-item-overflow">{{ event.action }}</div>
+                            <div class="small text-muted">             
+                                <time class="timeago" v-bind:datetime="event.date">{{ event.date }}</time>
+                            </div>
+                        </div>
+                        <div>
+                            <div>
+                                <span class="badge" v-bind:class="getTrxStatusBgClass(event.strictType)">{{ event.strictType }}</span>
+                            </div>
+                            <div>
+                                <span class="badge" v-bind:class="getTrxStatusBgClass(event.loggingLevel)">{{ event.loggingLevel }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+
+            </div>
+        </div>
+    </div>
+</div>

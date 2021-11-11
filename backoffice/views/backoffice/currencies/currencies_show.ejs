@@ -1,0 +1,75 @@
+<%- include('../../layout/header2') %>
+<div class="wrapper">	
+<%- include('../../layout/sidebar') %>
+<div class="main">
+<%- include('../../layout/navbar') %>
+<main id="v-app" class="content p-0">
+
+<div id="main-wrapper" class="d-none border-top">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex mt-1 align-items-center justify-content-between">
+                    <div>
+                        <h3>Gestion des devises</h3>
+                        <div class="text-muted fw-bolder">{{ currencies.length }} devises</div>
+                    </div>
+                    <div> 
+                        <button type="button" v-on:click="openAddCurrency" v-if="!form.addCurrency" class="btn btn-lg btn-success">Nouvelle devise</button>
+                        <button type="button" v-if="!form.sending && form.addCurrency" v-on:click="cancelAddCurrency" class="btn btn-lg btn-light border">Annuler</button>
+                    </div>
+                </div>
+                <div v-if="form.addCurrency">
+                    <hr>
+                    <form action="" class="ps-2 pe-2">
+                        <div class="row">
+                            <div class="col-3">
+                                <input type="text" placeholder="Nom de la devise" v-model="form.currency.name" class="form-control" name="currency">
+                            </div>
+                            <div class="col-3">
+                                <button v-if="!form.sending" v-on:click="createCurrency" class="btn btn-success">Ajouter</button>
+
+                                <button v-if="form.sending" class="btn btn-success" disabled>Enregistrement...</button>
+                            </div>
+                        </div>
+                    </form>
+                    <hr>
+                </div>
+                <table class="border-top table table-striped table-hover my-0">
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Nom</th>
+                            <th>Date de création</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(currency, index) in currencies">
+                            <td class="fw-bolder">{{ index + 1 }}</td>
+                            <td>{{ currency.name }}</td>
+                            <td>{{ currency.createdAt }}</td>
+                            <td class="text-end">
+                                <button v-on:click="deleteCurrency(index, currency.id)" class="btn btn-sm btn-light border">Supprimer</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../gameTrx/toasts'); -%>
+<%- include('../operators/toastsError'); -%>
+
+</main>
+</div>
+</div>
+<%- include('../../layout/scripts2') %>
+<script src="/pages/backoffice-v1/currencies/currencies_show.vue.js"></script>
+<script>
+    var vm = CurrenciesPage(<%- JSON.stringify(currenciesUrls) %>);
+</script>
+<%- include('../../layout/footer') %>
+	

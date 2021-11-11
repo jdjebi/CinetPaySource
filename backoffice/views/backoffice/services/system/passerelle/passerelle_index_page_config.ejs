@@ -1,0 +1,88 @@
+<div class="ps-2 pe-2 pt-1 pb-1 text-center bg-light border-bottom">
+    <span class="fw-bold"> Console de configuration</span>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4 col-xl-3 p-0">
+            <div id="cinetpay-list-group" class="card" style="box-shadow: none">
+                <div class="list-group list-group-flush rounded-0" role="tablist">
+                    <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#devise" role="tab" aria-selected="false">
+                        <i class="fa fa-sync"></i> &nbsp; Configurations opérateurs
+                    </a>
+                    <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#system-config" role="tab" aria-selected="false">
+                        <i class="fa fa-terminal"></i> &nbsp; Variables d'environnement
+                    </a>
+                                     
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 col-xl-9 p-0">
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="devise" role="tabpanel">
+                    <div class="card" style="box-shadow: none">
+                        <div class="card-header">
+                            <h5 class="mb-0 fw-bold">Configurations opérateurs</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <template v-if="serviceConfig.operators == null">
+                                <div class="ps-3 pe-2 text-center">
+                                    <div class="h2 mb-4 text-muted"><i class="fa fa-sync"></i></div>
+                                    <div class="mb-4 h4 text-muted">Données des opérateurs non présentent sur le serveur de la passerelle</div>
+                                    <button v-on:click="syncWebConfigs" class="btn btn-success">Synchroniser les données</button>
+                                </div>
+                                <div class="text-center mt-3 small text-muted">
+                                    <span>Opérateur</span>
+                                </div>
+                            </template>
+                            <template v-else>
+                                <table class="border-top table table-sm table-striped table-hover my-0">
+                                    <thead>
+                                        <tr>
+                                            <th>N°</th>
+                                            <th>Code opérateur</th>
+                                            <th>Code de ressources</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(operator,index) in serviceConfig.operators">
+                                            <td>{{ index + 1 }}</td>
+                                            <td class="fw-bolder">{{ operator.alias }}</td>
+                                            <td class="text-success">
+                                                <span class="badge bg-success">{{ operator.ressourcesCode }}</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="system-config" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0 fw-bold">Variables d'environnement</h5>
+                        </div>
+                        <div class="card-body p-0">          
+                            <table class="border-top table table-sm table-striped table-hover my-0">
+                                <thead>
+                                    <tr>
+                                        <th>N°</th>
+                                        <th>Nom</th>
+                                        <th>valeur</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(config,index) in serviceConfig.env">
+                                        <td>{{ index + 1 }}</td>
+                                        <td class="fw-bolder">{{ config.name }}</td>
+                                        <td>{{ config.value }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

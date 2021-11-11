@@ -1,0 +1,16 @@
+.audit-status{
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: rgb(66, 65, 65);
+    border-radius: 50%;
+    border: solid 1px #000;
+}
+
+.audit-status.audit-status-success{
+    background-color: #28A73A;  
+}
+
+.audit-status.audit-status-warning{
+    background-color: rgba(255, 121, 63, 1);
+}

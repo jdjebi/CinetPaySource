@@ -1,0 +1,100 @@
+<%- include('../../layout/header2') %>
+<div class="wrapper">	
+<%- include('../../layout/sidebar') %>
+<div class="main">
+<%- include('../../layout/navbar') %>
+<main id="v-app" class="content p-0 border-top">
+
+
+
+<div id="main-wrapper" class="d-none">
+        <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex mt-1 align-items-center justify-content-between">
+                    <div>
+                        <h3>Gestion des pays</h3>
+                        <div class="text-muted fw-bolder">{{ countries.length }} pays</div>
+                    </div>
+                    <div>
+                        <button type="button" v-on:click="openAddCountry" v-if="!form.addCountry" class="btn btn-lg btn-success">Nouveau pays</button>
+                        <button type="button" v-if="!form.sending && form.addCountry" v-on:click="cancelAddCountry" class="btn btn-lg btn-light border">Annuler</button>
+                    </div>
+                </div>
+                <div v-if="form.addCountry">
+                    <hr>
+                    <form action="" class="ps-2 pe-2">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input type="text" placeholder="Nom du pays" v-model="form.country.name" class="form-control" name="name">
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="text" placeholder="Code du pays" v-model="form.country.code" class="form-control" name="code">
+                            </div>
+                            <div class="col-sm-3">
+                                <select class="form-select" v-model="form.country.currency.id" class="form-control" name="currency">
+                                    <option v-for="currency in currencies" v-bind:value="currency.id" v-text="currency.name"></option>   
+                                </select>                                
+                            </div>
+                            <div class="col-sm-3">
+                                <button v-if="!form.sending" v-on:click="createCountry" class="btn btn-success">Ajouter</button>
+
+                                <button v-if="form.sending" class="btn btn-success" disabled>Enregistrement...</button>
+                            </div>
+                        </div>
+                    </form>
+                    <hr>
+                </div>
+                <table class="border-top table table-striped table-hover my-0">
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Nom</th>
+                            <th>Code</th>
+                            <th>Devise</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(country, index) in countries">
+                            <td class="fw-bolder">{{ index + 1 }}</td>
+                            <td class="fw-bolder text-success">
+                              <img class="me-2" v-bind:src="getCountryLogo(country.code)" style="width: 22px" alt="Logo du pays">
+								{{ country.name }}
+							</td>
+                            <td>{{ country.code }}</td>
+                            <td>
+                                
+                                {{ country.currency.name }}
+                            </td>
+                            <td class="text-end">
+                                <button v-on:click="openEditCountryModal(index)" class="btn btn-sm btn-success">Modifier</button>
+                                <button v-on:click="deleteCountry(index, country.id)" class="btn btn-sm btn-light border">Supprimer</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('modalEditCountry'); -%>
+
+<%- include('../gameTrx/toasts'); -%>
+<%- include('../operators/toastsError'); -%>
+
+</main>
+</div>
+</div>
+<%- include('../../layout/scripts2') %>
+<script src="/pages/backoffice-v1/operators/operators_helpers.js"></script>
+<script src="/pages/backoffice-v1/countries/countries_show.vue.js"></script>
+<script>
+    var vm = CountriesPage({
+        countriesUrls:<%- JSON.stringify(countriesUrls) %>,
+        currenciesUrls:<%- JSON.stringify(currenciesUrls) %>,
+    });
+</script>
+<%- include('../../layout/footer') %>
+	

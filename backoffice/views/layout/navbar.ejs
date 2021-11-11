@@ -1,0 +1,84 @@
+<nav class="navbar navbar-expand navbar-light navbar-bg">
+    <a class="sidebar-toggle d-flex">
+        <i class="hamburger align-self-center"></i>
+    </a>
+
+    <form class="d-none d-sm-inline-block">
+        <div class="input-group input-group-navbar">
+            <input type="text" class="form-control" placeholder="Rechercher une transaction" aria-label="Search">
+            <button class="btn" type="button">
+                <i class="align-middle" data-feather="search"></i>
+            </button>
+        </div>
+    </form>
+
+    <ul class="navbar-nav navbar-align ms-2">
+
+        <li class="nav-item">
+            <a class="nav-link" href="/services">
+                <div id="servicesIndicator" class="blob" style="position: relative;top: 5px;"></div>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" title="Tableau de bord" href="/dashboard"> <i class="fa fa-home align-midle"></i></a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link"> | </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="/services" title="Liste des services de transfert">
+                <div class="d-sm-inline-block">
+                    <i class="fa fa-hdd"></i> <span class="fw-bold text-muted"></span>                    
+                </div>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="/backoffice/transactions" title="Gestion des transactions">
+                <i class="fa fa-file-invoice-dollar"></i>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link"> | </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link text-success" title="Liste des opérateurs" href="/operateurs"> <i class="align-middle" data-feather="users"></i> <span id="operatorCounter">0</span></a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" title="Liste des utilisateurs" href="/users"> <i class="fa fa-user" ></i></a>
+        </li>
+
+    </ul>
+
+    <div class="navbar-collapse collapse">
+        <ul class="navbar-nav navbar-align">
+            <li class="nav-item">
+                <a class="nav-link" href="/backoffice/transactions/simulateur/v2" title="Simulateur">
+                    <i class="fa fa-gamepad"></i> Simulateur
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/services/system/journal">
+                    <div class="position-relative">
+                        <i class="far fa-newspaper"></i> Journal
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
+                    <span class="text-dark"> Administrateur (<%= user.username %>)&nbsp;</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a class="dropdown-item" href="/deconnexion"><i class="align-middle me-1"
+                            data-feather="log-out"></i> Déconnexion</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>

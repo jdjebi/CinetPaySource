@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="shortcut icon" href="/img/icons/icon-96x96.png" />
+	<title>
+	<% if(title){ %>
+		<%= title %>
+	<% } else { %>
+		Tableau de bord
+	<% }  %>	
+	</title>
+	<link rel='stylesheet' href='/static/bootstrap-5/css/bootstrap.min.css' />
+	<link rel='stylesheet' href='/static/nprogress/nprogress.css' />
+	<link href="/static/dashboard/css/app.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="/static/alertify/css/alertify.min.css">
+	<link rel="stylesheet" type="text/css" href="/static/alertify/css/themes/default.min.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/pulse-dot.css">
+	<link rel="stylesheet" type="text/css" href="/static/css/lds-ripple.css">
+	<link rel="stylesheet" href="/static/loading/loading-bar.css">
+	<link rel="stylesheet" href="/assets/main.css">
+	<script src='/static/fontawesome/all.min.js'></script>
+	<style>
+		.sidebar-item.active .sidebar-link:hover, .sidebar-item.active>.sidebar-link {
+			color: #e9ecef;
+			background: linear-gradient(
+		90deg
+		,rgba(59,125,221,.1),rgba(59,125,221,.0875) 50%,transparent);
+			border-left-color: #198754;
+		}
+	</style>
+	<style>
+		.form-check-input:checked {
+			background-color: #0a9855;
+			border-color: #0a9855;
+		}
+	
+		#nprogress .spinner-icon { 
+			border-top-color: #23c178;
+			border-left-color: #23c178;
+			border-radius: 50%;
+			display: none;
+		}
+	
+		#nprogress .bar {
+			background: #23c178;
+			height: 4px;
+		}
+		#nprogress .peg {
+			box-shadow: 0 0 10px #23c178, 0 0 5px #23c178;
+		}
+	</style>
+	<style>
+		
+	</style>
+</head>
+
+<body>

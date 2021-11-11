@@ -1,0 +1,44 @@
+<div class="modal fade" id="settingsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="staticBackdropLabel"> <i class="fa fa-cog text-success"></i> Paramètres</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div v-if="transaction" class="modal-body">
+            <div>
+                <h5 class="fw-bold">Modification du statut</h5>
+                <hr>
+                <form v-on:submit.prevent="updateTransactionStatus">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 col-sm-12">
+                            <label for="statut">STATUT:</label>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <select type="text" class="form-select" id="status" v-model="newStatus">
+                                <option value="REC" v-bind:selected="transaction.status == 'REC'">EN COURS</option>
+                                <option value="PAUSE" v-bind:selected="transaction.status == 'PAUSE'">PAUSE</option>
+                                <option value="SUCCESS" v-bind:selected="transaction.status == 'SUCCESS'">SUCCES</option>
+                                <option value="FAILURE" v-bind:selected="transaction.status == 'FAILURE'">ECHEC</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 col-sm-12 text-end">
+                            
+                            <button v-if="!updatingTransactionStatus" type="submit" class="btn btn-success">Mettre à jour</button>
+                            
+                            <button v-if="updatingTransactionStatus" type="submit" class="btn btn-success" disabled>
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Mettre à jour
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Fermer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

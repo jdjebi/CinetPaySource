@@ -1,0 +1,16 @@
+com.payout.backoffice
+com.payout.backoffice.authenticate
+com.payout.backoffice.controller
+com.payout.backoffice.dao
+com.payout.backoffice.eventlog.entity
+com.payout.backoffice.exception
+com.payout.backoffice.kafka
+com.payout.backoffice.repository
+com.payout.backoffice.scheduler
+com.payout.backoffice.scheduler.service.transfert
+com.payout.backoffice.services.dispatcher
+com.payout.backoffice.supervisor.service.entity
+com.payout.backoffice.supervisor.service.system
+com.payout.backoffice.webconf.gateway
+com.payout.backoffice.webconf.transfert
+com.payout.backoffice.webconf.transfert.entity

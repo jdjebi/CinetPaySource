@@ -1,0 +1,30 @@
+{
+  "name": "backoffice-v1",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon ./bin/www",
+    "run": "nodemon ./bin/www"
+  },
+  "dependencies": {
+    "@prisma/client": "^2.22.1",
+    "axios": "^0.21.1",
+    "cache-manager": "^3.4.3",
+    "connect-flash": "^0.1.1",
+    "connect-session-knex": "^2.1.0",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "ejs": "~2.6.1",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "express-session-cache-manager": "^1.0.2",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "pg": "^8.7.1"
+  },
+  "devDependencies": {
+    "prisma": "^2.22.1"
+  }
+}

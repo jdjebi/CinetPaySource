@@ -1,0 +1,113 @@
+<nav id="sidebar" class="sidebar collapsed">
+    <div class="sidebar-content js-simplebar">
+
+        <a class="sidebar-brand" href="/">
+            <span class="p-1 ps-3 pe-3 shadow bg-white" style="border-radius: 20px">
+              <span style="color: rgb(18,82,42);">Backoffice</span><span style="color: rgb(50,178,74);">Payout</span> 
+            </span>
+        </a>
+
+        <ul class="sidebar-nav">
+          
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/dashboard">
+                    <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Tableau de bord</span>
+                </a>
+            </li>
+
+            <hr>
+
+            <li class="sidebar-header">
+                Administration
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/users">
+                    <i class="fa fa-user"></i> <span>Gestion des utilisateurs</span>
+                </a>
+            </li>
+
+            <li class="sidebar-header">
+                Transactions
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/backoffice/transactions/simulateur/v2">
+                    <i class="fa fa-gamepad" style="position:relative; top:3px"></i> <span class="align-middle">Simulateur</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/backoffice/transactions">
+                    <i class="fa fa-file-invoice-dollar" style="position:relative; top:3px"></i> <span class="align-middle">Gestion des transactions</span>
+                </a>
+            </li>
+
+            <li class="sidebar-header">
+                Services
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/services/">
+                    <i class="align-middle fa fa-hdd"></i> Gestion des services
+                </a>
+                <a href="#auth" data-bs-toggle="collapse" class="sidebar-link" aria-expanded="false">
+                    <i class="align-middle fa fa-terminal"></i> Services systèmes
+                </a>
+                <ul id="auth" class="sidebar-dropdown list-unstyled collapse show" data-bs-parent="#sidebar">
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="/services/system/journal">
+                            <i class="align-middle fa fa-newspaper text-success"></i> <span class="align-middle">Journal</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="/services/system/passerelle">
+                            <i class="align-middle fa fa-door-open text-success"></i> <span class="align-middle">Passerelle</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="pages-sign-up.html">
+                            <i class="align-middle fa fa-project-diagram text-success"></i> <span class="align-middle">Dispatcher</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <hr>
+
+            
+            <li class="sidebar-header">
+                Opérateurs et SIMBOX
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/operateurs">
+                    <i class="align-middle" data-feather="users"></i> <span class="align-middle">Gestion des opérateurs</span>
+                </a>
+            </li>  
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/simbox">
+                    <i class="align-middle fa fa-sim-card" style="margin-right: 19px !important;"></i> <span class="align-middle">Gestion des SIMBOX</span>
+                </a>
+            </li>
+
+            <li class="sidebar-header">
+                Pays et devises
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/pays">
+                    <i class="align-middle" data-feather="flag"></i> <span class="align-middle">Gestion des pays</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="/devises">
+                    <i class="align-middle" data-feather="dollar-sign"></i> <span class="align-middle">Gestion des devises</span>
+                </a>
+            </li>
+
+        </ul>
+
+    </div>
+</nav>

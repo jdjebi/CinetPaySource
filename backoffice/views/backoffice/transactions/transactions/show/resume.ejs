@@ -1,0 +1,154 @@
+<div class="p-4">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="d-flex justify-content-between">
+                <h5 class="mb-3 fw-bold"># GENERAL</h5>
+                <div>
+                    <button v-on:click="openSettings" class="btn btn-sm btn-success rounded"><i class="fa fa-cog"></i> Paramètres</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-5">
+        <div class="fw-bold mb-1 text-success small">STATUT</div>  
+        <div>{{ transaction.status }}</div>  
+        </div>
+        <div class="col-md-6">
+            <div class="fw-bold mb-1 text-success small">STATUT CINETPAY</div>  
+            <div>{{ transaction.systemStatus }}</div>  
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-5">
+        <div class="fw-bold mb-1 text-success small">DATE DE RECEPTION</div>  
+        <div>{{ transaction.createdAt }}</div>  
+        </div>
+        <div class="col-md-6">
+            <div class="fw-bold mb-1 text-success small">DATE DE FIN DE TRAITEMENT</div>  
+            <div >{{ transaction.finishedAt }}</div>  
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+        <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+        <h5 class="mb-3 fw-bold"># IDENTIFICATION</h5>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-5">
+        <div class="fw-bold mb-1 text-success small">SYSTEM ID</div>  
+        <div>{{ transaction.id }}</div>  
+        </div>
+        <div class="col-md-6">
+            <div class="fw-bold mb-1 text-success small">TRANSACTION ID</div>  
+            <div>{{ transaction.transactionId }}</div>  
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-5">
+        <div class="fw-bold mb-1 text-success small">CLIENT TRANSACTION ID</div>  
+        <div>{{ transaction.clientTransactionId }}</div>  
+        </div>
+        <div class="col-md-5">
+            <div class="fw-bold mb-1 text-success small">LOT</div>  
+            <div>8</div>  
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+        <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+        <h5 class="mb-3 fw-bold"># TRANSFERT</h5>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-5">
+        <div class="fw-bold mb-1 text-success small">OPERATEUR</div>  
+        <div>{{ transaction.operator }}</div>  
+        </div>
+        <div class="col-md-5">
+        <div class="fw-bold mb-1 text-success small">PAYS {{ transaction.country }}</div>  
+        <div><img v-bind:src="'https://www.countryflags.io/' + transaction.country + '/flat/32.png'" width="20"> {{ transaction.country }}</div>  
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-5">
+            <div class="fw-bold mb-1 text-success small">PREFIX</div>  
+            <div>{{ transaction.prefix }}</div>  
+        </div>
+        <div class="col-md-5">
+            <div class="fw-bold mb-1 text-success small">TELEPHONE</div>  
+            <div>{{ transaction.phone }}</div>  
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-5">
+            <div class="fw-bold mb-1 text-success small">MONTANT</div>  
+            <div>{{ transaction.amount }}</div>  
+        </div>
+        <div class="col-md-5">
+            <div class="fw-bold mb-1 text-success small">DEVISE</div>  
+            <div>{{ transaction.currency }}</div>  
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-5">
+            <div class="fw-bold mb-1 text-success small">URL DE NOTIFICATION</div>  
+            <div>{{ transaction.notifyUrl }}</div>  
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+        <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+        <h5 class="mb-3 fw-bold"># RESSOURCE</h5>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="fw-bold mb-1 text-success small">RESSOURCE</div>  
+            <div></div>  
+        </div>
+        <div class="col-md-5">
+            <div class="fw-bold mb-1 text-success small">TYPE</div>  
+            <div><span class="badge bg-success"></span></div>  
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-5">
+            <div class="fw-bold mb-1 text-success small">SOLDE AVANT</div>  
+            <div></div>  
+        </div>
+        <div class="col-md-5">
+            <div class="fw-bold mb-1 text-success small">SOLDE APRES</div>  
+            <div></div>  
+        </div>
+    </div>
+</div>

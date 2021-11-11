@@ -1,0 +1,136 @@
+<%- include('../../../layout/header2') %>
+
+<div class="wrapper">	
+<%- include('../../../layout/sidebar') %>
+<div class="main">
+<%- include('../../../layout/navbar') %>
+
+<main id="v-app" class="content p-0 position-relative">
+    <div class="bg-white p-2 border-bottom">
+        <div>
+            <h3>Gestion des transactions</h3>            
+        </div>
+    </div>
+    <div class="bg-white table-responsive" style="font-size: 13px">
+        <table class="table table-md bg-white table-striped">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">ID transaction</th>
+              <th scope="col">Numéro</th>
+              <th scope="col">Opérateur</th>
+              <th scope="col">RX</th>
+              <th scope="col">Lot</th>
+              <th scope="col">Montant</th>
+              <th scope="col">Statut</th>
+              <th scope="col">CTX</th>
+            <th scope="col">Date de création</th>
+            <th scope="col">Date de fin</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(trx, index) in transactions">
+              <th scope="row">{{ index + 1 }}</th>
+              <td>{{ trx.transactionId }}</td>
+              <td>{{ trx.phone }}</td>
+              <td>{{ trx.operator }}</td>
+              <td>{{ trx.ressourcesCode }}</td>
+              <td>{{ trx.batchnumber }}</td>
+              <td>{{ trx.amount }}</td>
+              <td>{{ trx.status }}</td>
+                <td>{{ trx.pauseComment }}</td>
+              <td>{{ trx.createdAt }}</td>
+              <td>{{ trx.finishedAt }}</td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+</main>
+</div>
+</div>
+
+<%- include('../../../layout/scripts2') %>
+
+<script>
+    function EventlogManagePage(data){
+        return vm = new Vue({
+            el:"#v-app",
+
+            data: {
+
+                urls:data.urls,
+
+                transactions: [],
+
+            },
+
+            mounted: function (){
+
+                var vm = this;
+
+                vm.getAllTransactions();
+
+                setInterval(function(){
+                    vm.getAllTransactions();
+                },3000)
+
+            },
+
+            methods: {
+
+                getAllTransactionsRequest: function(){
+                    return axios.get(this.urls.services.gateway.transactions.rest);
+                },
+
+                getAllTransactions: function(){
+
+                    NProgress.start();
+
+                    var vm = this; 
+
+                    this.getAllTransactionsRequest()
+                        .then(function(response){
+                            vm.transactions = response.data;
+                        })
+                        .catch(function(error){
+                            console.log(error.message);
+                            alertify.error("Une erreur c'est produite")
+                        })
+                        .then(function(){
+                            NProgress.done();
+                        });
+                },
+
+                /* Helpers */
+                getBadge:  function(tag){
+                    if(tag == "INFO"){
+                        return "bg-info"
+                    }else if(tag == "WARNING"){
+                        return "bg-warning"
+                    }else if(tag == "ERROR"){
+                        return "bg-danger"
+                    }else if(tag == "LOG"){
+                        return "bg-secondary"
+                    }else if(tag == "EVENT"){
+                        return "bg-success"
+                    }else if(tag == "UPDATED"){
+                        return "bg-primary"
+                    }else{
+                        return "bg-secondary"
+                    }
+                },
+
+            }
+
+        });
+    }
+
+    var vm = EventlogManagePage({
+        urls:<%- JSON.stringify(urls) %>
+    });
+</script>
+
+<%- include('../../../layout/footer') %>
+
+
+

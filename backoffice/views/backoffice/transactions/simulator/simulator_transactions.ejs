@@ -1,0 +1,102 @@
+<div class="table-responsive ">
+   <table class="table small table-md bg-white table-striped">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">ID</th>
+      <th scope="col">Opérateur</th>
+      <th scope="col">Numéro</th>
+      <th scope="col">Montant</th>
+      <th scope="col">Statut</th>
+      <th scope="col">CX</th>
+      <th scope="col">Début</th>
+      <th scope="col">Fin</th>
+      <th scope="col">Durée (ms)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-bind:id="'trx-' + index" v-for="(trx, index) in getSelectedSimulation().transactions.slice(0,200)">
+      <th scope="row" class="align-middle">{{ index + 1 }}</th>
+      <td>
+        <a v-on:click="openTransactionPopup(urls.backoffice.transactions.showTransaction + trx.transactionId)" class="text-success"><i class="fa fa-link"></i></a>
+        &nbsp;
+        <a v-on:click="openTransactionPopup(urls.services.eventlog.get.stats + trx.transactionId)" class="text-muted"><i class="fa fa-chart-line"></i></a>
+        &nbsp;
+        <a target="_blank" v-bind:href="urls.backoffice.transactions.showTransaction + trx.transactionId" class="text-dark">{{ trx.transactionId }}</a>
+      </td>
+      <td>{{ trx.operator }}</td>
+      <td>{{ trx.phone }}</td>
+      <td>{{ trx.amount }}</td>
+      <td>
+
+        <span v-if="checkAcception(trx) == 'TRX_ACCEPTED'" class="badge bg-success">
+          TRX_ACCEPTED                    
+        </span>
+        <span  v-if="checkAcception(trx) == 'TRX_REFUSED'" class="badge bg-danger">
+          TRX_REFUSED         
+        </span>
+        <span  v-if="checkAcception(trx) == 'TRX_PROBLEM'" class="badge bg-warning">
+          TRX_PROBLEM         
+        </span>
+
+        <span v-if="trx.status == 'SUCCESS'" class="badge bg-success">
+          {{ trx.status }}                      
+        </span>
+        <span  v-if="trx.status == 'PAUSE'" class="badge bg-warning">
+          {{ trx.status }}          
+        </span>
+        <span  v-if="trx.status == 'FAILURE'" class="badge bg-danger">
+          {{ trx.status }}          
+        </span>
+      </td>
+      <td>{{ trx.pauseComment }}</td>
+      <td>{{ getDateTime(trx.createdAt) }}</td>
+      <td>{{ getDateTime(trx.finishedAt) }}</td>
+
+       <td>{{ getTransactionDuration(trx) }}</td>
+    </tr>
+
+    <template v-if="getSelectedSimulation().transactions.length > 200">
+      <tr v-bind:id="'trx-' + getSelectedSimulation().transactions.length" v-for="(trx, index) in [getSelectedSimulation().transactions[getSelectedSimulation().transactions.length - 1]]">
+        <th scope="row" class="align-middle">{{ getSelectedSimulation().transactions.length }}</th>
+        <td>
+          <a v-on:click="openTransactionPopup(urls.backoffice.transactions.showTransaction + trx.transactionId)" class="text-success"><i class="fa fa-link"></i></a>
+          &nbsp;
+          <a v-on:click="openTransactionPopup(urls.services.eventlog.get.stats + trx.transactionId)" class="text-muted"><i class="fa fa-chart-line"></i></a>
+          &nbsp;
+          <a target="_blank" v-bind:href="urls.backoffice.transactions.showTransaction + trx.transactionId" class="text-dark">{{ trx.transactionId }}</a>
+        </td>
+        <td>{{ trx.operator }}</td>
+        <td>{{ trx.amount }}</td>
+        <td>
+
+          <span v-if="checkAcception(trx) == 'TRX_ACCEPTED'" class="badge bg-success">
+            TRX_ACCEPTED                    
+          </span>
+          <span  v-if="checkAcception(trx) == 'TRX_REFUSED'" class="badge bg-danger">
+            TRX_REFUSED         
+          </span>
+          <span  v-if="checkAcception(trx) == 'TRX_PROBLEM'" class="badge bg-warning">
+            TRX_PROBLEM         
+          </span>
+
+          <span v-if="trx.status == 'SUCCESS'" class="badge bg-success">
+            {{ trx.status }}                      
+          </span>
+          <span  v-if="trx.status == 'PAUSE'" class="badge bg-warning">
+            {{ trx.status }}          
+          </span>
+          <span  v-if="trx.status == 'FAILURE'" class="badge bg-danger">
+            {{ trx.status }}          
+          </span>
+        </td>
+        <td>{{ trx.pauseComment }}</td>
+        <td>{{ getDateTime(trx.createdAt) }}</td>
+        <td>{{ getDateTime(trx.finishedAt) }}</td>
+
+        <td>{{ getTransactionDuration(trx) }}</td>
+      </tr>
+    </template>
+  </tbody>
+</table>
+</div>

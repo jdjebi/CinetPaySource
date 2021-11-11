@@ -1,0 +1,63 @@
+<%- include('../../layout/header2') %>
+	<div class="wrapper">	
+		<%- include('../../layout/sidebar') %>
+		<div class="main">
+			<%- include('../../layout/navbar') %>
+
+<main class="content p-0" id="v-app">
+    <div class="p-0 border-top bg-white position-relative">
+        <div class="row">
+            <div class="d-flex justify-content-between col-md-12 p-4">
+                <div class="h3">
+                    Jeux de transactions
+                </div>
+                <div>
+                    <a v-on:click="OpenFormGameTrx" href="#generate-game-trx" class="btn btn-success">Créer un jeu de transactions</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="border-top p-0">
+        <table class="table bg-white table-striped">
+            <thead>
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col">Titre</th>
+                <th scope="col">Moyen de paiement</th>
+                <th scope="col">Pays</th>
+                <th scope="col">Transaction</th>
+                <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(gameTrx, index) in gamesTrx">
+                <th scope="row">{{ index + 1}}</th>
+                <td>{{ gameTrx.title }}</td>
+                <td>{{ gameTrx.paymentmethod }}</td>
+                <td>{{ gameTrx.country }}</td>
+                <td>{{ gameTrx.numbertrx }}</td>
+                <td>
+                    <a v-bind:href="gameTrx.show_url" class="btn btn-success btn-sm">Consulter</a>
+                    <a v-bind:href="gameTrx.player_url" class="btn btn-success btn-sm">Jouer</a>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+        
+    <%- include('modal_create_gametrx'); -%>
+    <%- include('toasts'); -%>
+</main>
+<%- include('../../layout/scripts2') %>
+
+			<%- include('../../layout/page_footer') %>
+		</div>
+	</div>
+<%- include('../../layout/scripts2') %>
+
+<script src="/pages/backoffice-v1/gametrx/index.vue.js"></script>
+
+
+
+<%- include('../../layout/footer') %>
+	

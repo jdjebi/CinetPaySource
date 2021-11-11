@@ -1,0 +1,57 @@
+<div class="mt-5 text-center">
+    <template v-if="!syncIsRunning">
+        <div class="mb-5">
+            <i class="text-muted" data-feather="slash" style="width: 50px; height: 50px;"></i>
+        </div>
+        <div class="h2">
+            <span v-if="syncFailed == true" class="text-danger">
+                Synchronisation impossible !
+            </span>
+            <span v-if="syncFailed == null">
+                Aucune passerelle configurée
+            </span>
+        </div>
+    </template>
+    <template v-if="syncIsRunning && infosCollected == false">
+        <div class="mb-5">
+            <div class="lds-ripple" style="left: -11px;"><div></div><div></div></div>
+        </div>
+        <div class="h2">
+            Récupération des infos...
+        </div>
+    </template>
+    <template v-if="infosCollected == true && syncFinished == null" class="text-danger">
+        <div class="mb-5">
+            <div class="lds-ripple" style="left: -11px;"><div></div><div></div></div>
+        </div>
+        <div class="h2">
+            Données récupérées. Synchronisation en cours...
+        </div>
+    </template>
+    <template v-if="infosCollected == true && syncFinished == false" class="text-danger">
+        <div class="mb-5">
+            <i class="text-muted" data-feather="slash" style="width: 50px; height: 50px;"></i>
+        </div>
+        <div class="h2 text-danger">
+            Une erreur c'est produite. Consultez les logs
+        </div>
+    </template>
+    <template v-if="infosCollected == true && syncFinished == true" class="text-danger">
+        <div class="mb-5">
+            <div class="lds-ripple" style="left: -11px;"><div></div><div></div></div>
+        </div>
+        <div class="h2 text-success">
+            Synchronisation réussie ! Initialisation de l'interface...
+        </div>
+    </template>
+    <div v-if="!(infosCollected == true && syncFinished == true)" class="d-flex justify-content-center">
+        <div class="col-md-6 mt-3">
+            <div class="input-group mb-3">
+                <input v-bind:disabled="syncFormDisabled" v-model="gateway_url" type="text" class="form-control form-control-lg" placeholder="Entrer l'url de la passerelle">
+                <button class="btn btn-success" v-on:click="syncService" type="button">
+                    <i class="fa fa-sync"></i> Configurer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

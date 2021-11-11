@@ -1,0 +1,809 @@
+<%- include('../../../layout/header2') %>
+
+<%- include('../../services/system/services_support_css2.ejs') %>
+
+<style>
+    #simulator{
+        position: relative;
+        align-items: stretch;
+        display: flex;
+        width: 100%;
+    }
+
+    #simulator-sidebar-left{
+        width: 300px;
+        position: relative;
+        height: 85vh
+    }
+
+    #simulator-select-menu{
+        height: 100%;
+        position: absolute;
+        top: 38px;
+        left: 0;
+        height: 90vh;
+        width: 100%;
+        z-index:10;
+        overflow-y: scroll;
+    }
+
+    #simulator-content{
+        width: 100%;
+        height: 90vh;
+        overflow-y: scroll;
+    }
+
+    .simulation-box:hover{
+        cursor: pointer;
+    }
+
+    .simulation-box:hover{
+        background-color: #55ef783b;
+    }
+
+    .simulationSelected{
+        background-color: #55ef783b;
+    }
+</style>
+
+<style type="text/css">
+    
+    .rpp-card{
+        
+        /*box-shadow: rgb(0 0 0 / 3%) 0px 0.46875rem 2.1875rem, 
+                    rgb(0 0 0 / 3%) 0px 0.9375rem 1.40625rem, 
+                    rgb(0 0 0 / 5%) 0px 0.25rem 0.53125rem, 
+                    rgb(0 0 0 / 3%) 0px 0.125rem 0.1875rem;
+        */
+
+        border: 1px solid #dee2e6;
+        border-radius: 0.65rem;
+    }
+
+    .rpp-card .val{
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+</style>
+
+<div class="wrapper">   
+    
+<div class="main">
+<%- include('../../../layout/navbar') %>
+<main id="v-app" class="content p-0 border-top" style="position: relative;">
+    <div id="main-wrapper" class="d-none">
+        <div id="simulator">
+
+            <div id="simulator-sidebar-left" class="border-end border-bottom">
+
+                <div id="simulator-select-menu-header" class="bg-white d-flex pt-2 pb-2 ps-3 pe-2 align-items-center justify-content-between border-bottom">
+                    <div class="fw-bold mb-0">Simulation</div>
+                    <div>
+                        <button v-on:click="addSimulation" class="btn btn-sm btn-light border">Ajouter</button>
+                    </div>
+                </div>
+                <div id="simulator-select-menu-body" class="border-end"  style="overflow-y: scroll; height: 92%">
+                    <template v-if="getSelectedSimulation() != null">
+                        <div v-for="(simulation, index) in simulations">
+                            <div v-on:click="selectSimulation(simulation.id)" class="simulation-box p-3 border-bottom" v-bind:class="[(simulation.id == simulationSelectedId) ? 'simulationSelected' : '']">
+                                <div class="d-flex justify-content-between">
+                                    <div class="fw-bold">Simulation {{ simulation.id }}</div>
+                                    <div>
+                                        <span v-if="!simulation.isSimulated" class="badge bg-primary">NEW</span>
+
+                                        <span v-if="simulation.executing" class="badge bg-secondary">RUNNING</span>
+
+                                        <span v-if="simulation.simulationFinished" class="badge bg-success">DONE</span>
+                                    </div>
+                                </div>
+                                <div class="small">Opérateur: {{ getOperatorName(simulation.operator) }}</div>
+                                <div class="small">Trx: {{ simulation.maxTrxNbr }}</div>
+                                <div class="small">Montant: {{ simulation.maxTrxAmount }}</div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+            </div>
+
+
+
+            <div id="simulator-content">
+                <div id="simulator-header" class="bg-white">
+                    <div class="d-flex justify-content-between border-bottom align-items-center pt-2 pb-2 ps-3 pe-3">
+                        <div class="fw-bold mb-0 text-muted">
+                            <div>Simulateur</div>
+                        </div>
+                        <div>
+                            <form>
+                                <div class="row">  
+                                    <div class="col-md-3">
+                                        <input type="number" class="form-control form-control-sm" id="AmountMax" placeholder="Montant max" v-model.number="simulationData.maxTrxAmount">     
+                                    </div> 
+                                    <div class="col-md-3">
+                                        <input type="number" class="form-control form-control-sm" id="trxMax" placeholder="Nombre de transactions max" v-model.number="simulationData.maxTrxNbr">     
+                                    </div> 
+                                    <div class="col-md-4">   
+                                        <select class="form-select form-select-sm" v-model="simulationData.operator">
+                                            <option value="all">Tout</option>
+                                            <option v-for="(operator,index) in operators" v-bind:value="index">
+                                                {{ operator.name }} &nbsp;[{{ operator.resourcesCode }}]
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        <a href="#" v-on:click="addSimulation">
+                                            <i class="fa fa-plus text-success"></i>
+                                        </a>
+                                        &nbsp; &nbsp;
+                                        <a href="#" v-on:click="simulate">
+                                            <i class="fa fa-play text-success"></i>
+                                        </a>
+                                    </div> 
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div v-if="getSelectedSimulation() != null" class="d-flex justify-content-between align-items-center pt-2 pb-2 ps-3 pe-3">
+                        <div>
+                            <div class="fw-bold h4 mb-0">
+                                <span>Simulation {{ getSelectedSimulation().id }}</span>
+                                <template v-if="getSelectedSimulation() != null">
+                                    <span class="text-dark">/</span> 
+                                    <span class="text-dark fw-bold">{{ getSelectedSimulation().transactions.length }} TRX</span>
+                                </template>
+
+                                <span v-bind:class="[(getSelectedSimulation().simulationFinished) ? 'text-success' : 'text-muted']">
+                                    <i class="fa fa-circle small ms-2 align-middle" style="position: relative; top: -2px"></i> 
+                                </span>
+                                &nbsp;
+                                <span class="text-muted small">Lot: {{ getSelectedSimulation().batchnumber }}</span>
+                            </div>
+                            <div></div>
+                        </div>
+
+                        <div v-if="getSelectedSimulation() != null">
+                            <div>
+                                <a v-if="getSelectedSimulation().isSimulated == true" v-bind:href="'#trx-' + getSelectedSimulation().transactions.length" class="btn btn-light btn-sm">
+                                    Derniere transaction
+                                </a>
+
+                                <a v-if="getSelectedSimulation().isSimulated == false" href="#" v-on:click="StartSimulation()" class="btn btn-success btn-sm">
+                                    Simuler
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="simulator-body" class="pb-3" v-if="getSelectedSimulation() != null">
+                    <%- include('simulator_body') %>
+                </div>
+            </div>
+
+
+        </div>
+        <div>
+            <%- include("simulator_footer") %>
+        </div>
+    </div>
+</main>
+</div>
+
+
+<%- include('../../../layout/scripts2') %>
+
+<script type="text/javascript" src="/pages/backoffice-v1/transactions/simulator/simulator_index.vue.js"></script>
+
+<script type="text/javascript">
+    function randomInt(max){
+        return Math.floor(Math.random() * max + 1);
+    }
+
+    function randomInt2(min,max){
+        return Math.round(Math.floor(Math.random() * (max + 1 - min) + min));
+    }
+
+    function getCountryPrefix(prefix){
+        country_tel_prefix = {
+            CI:"225",
+            SN:"221",
+            CM:"237",
+            ML:"223"
+        }
+        return country_tel_prefix[prefix];
+    }
+
+    function fakePhone(length)
+    {
+        var str = "";
+        while (str.length < length) {
+            str += Math.floor(Math.random() * 10 + 1);
+        }
+        return str;
+    }
+
+    function fakeAmount(max,min){
+        return Math.round(Math.floor(Math.random() * (max - min) + min) / 10) * 10;
+    }
+
+    function sliceIntoChunks(arr, chunkSize) {
+        const res = [];
+        for (let i = 0; i < arr.length; i += chunkSize) {
+            const chunk = arr.slice(i, i + chunkSize);
+            res.push(chunk);
+        }
+        return res;
+    }
+</script>
+
+
+<script type="text/javascript">
+    dataUrls = <%- JSON.stringify(urls) %>
+</script>
+
+<script>
+    var vm = new Vue({
+        
+        el:"#v-app",
+
+        data:{
+
+            urls: dataUrls,
+
+            selectedSimulation:null,
+
+            simulationData:{
+                operator:"all",
+                maxTrxNbr:1,
+                maxTrxAmount:4,
+                useRandomTrxNbr:false,
+                useRandomTrxAmount:false,
+                defaultTrxNbr:"@0758907023",
+                useDefaultTrxNbr:true // Config using of phone number
+            },
+
+            simulationSelectedId: null,
+
+            operators:[],
+
+            simulations:[],
+
+            menu:{
+                transactions:true,
+                execute:false,
+                rapport:false
+            }
+        },
+
+        mounted: function(){
+            var vm = this;
+
+            vm.getOperators();
+
+            setInterval(function(){
+                vm.updateLoop();
+            },5000);
+
+            vm.showMainWrapp();
+
+        },
+
+        updated: function(){
+            
+        },
+
+        methods: {
+
+            showMainWrapp(){
+                $("#main-wrapper").removeClass("d-none");
+            },
+
+            getOperatorsRequest: function(){
+                return axios.get(this.urls.operators.rest);
+            },
+
+            getOperators(){
+                var vm = this;
+
+                NProgress.start();
+
+                this.getOperatorsRequest()
+                    .then(function(response){
+                        vm.operators = response.data;
+                        vm.addSimulation();
+
+                    })
+                    .catch(function(error){
+                        alertify.error("Une erreur c'est produit");
+                        console.log(error.message);
+                    })
+                    .then(function(){
+                        NProgress.done();
+                    })
+            },
+
+            addSimulation: function(simulateAfter){
+
+                // Initialisation
+                let vm = this;
+                let nbrTrxToGenerate = 0;
+                let operatorIndex = this.simulationData.operator;
+                let maxTrxNbrToGenerate = this.simulationData.maxTrxNbr;
+                let maxTrxAmount = this.simulationData.maxTrxAmount;
+
+                let operatorAlias = (operatorIndex == "all" ? operatorIndex : this.operators[operatorIndex].alias);
+
+                let configs = {
+                    maxTrxNbrToGenerate: this.simulationData.maxTrxNbr,
+                    maxTrxAmount: this.simulationData.maxTrxAmount,
+                    useRandomTrxNbr: this.simulationData.useRandomTrxNbr,
+                    useRandomTrxAmount: this.simulationData.useRandomTrxAmount,
+                    useDefaultTrxNbr: this.simulationData.useDefaultTrxNbr,
+                    defaultTrxNbr: this.simulationData.defaultTrxNbr,
+                    operator: operatorAlias
+                };
+
+                // Generation
+                
+                NProgress.start();
+
+                axios.post(this.urls.backoffice.transactions.generate, configs)
+                    .then(function(response){
+
+                        let data = response.data;
+
+                        if(data){
+
+                            vm.buildSimulation(operatorIndex, vm.simulationData, data);
+
+                            if(simulateAfter == true){
+                                vm.StartSimulation(); 
+                            }
+
+                        }else{
+                            alertify.error("Echec de la simulation !");
+                            alertify.error("Il faut au moins un opérateur pour effectuer une simulation");
+                            NProgress.done();
+                        }
+                        
+                    })
+                    .catch(function(error){
+                        alertify.error("Une erreur c'est produite: " + error.message);
+                        console.log(error.message);
+                        NProgress.done();
+                    })
+                    .then(function(){
+
+                        if(!(simulateAfter == true)){
+                            NProgress.done();
+                        }
+                    });
+                    
+            },
+
+            buildSimulation: function(operatorIndex, simulationData, generateResult){
+
+                let simulationId = this.simulations.length + 1;
+                let batchnumber = generateResult.batchnumber;
+                let transactions = generateResult.transactions;
+                let nbrTrxToGenerate = generateResult.nbrTrxToGenerate;
+
+                simulation = {
+                    id:simulationId,
+                    batchnumber: batchnumber,
+                    operator:operatorIndex,
+                    maxTrxNbr:nbrTrxToGenerate,
+                    maxTrxAmount:simulationData.maxTrxAmount,
+                    transactions:transactions,
+                    useRandomTrxNbr: simulationData.useRandomTrxNbr,
+                    useRandomTrxAmount: simulationData.useRandomTrxAmount,
+                    isSimulated:false,
+                    previousStats:null, 
+                    executing: false,
+                    simulationStarted:false,
+                    simulationFinished:false,
+                    newTransactionCollected:false,
+                    trxAcceptation: null,
+                    startedAt:null,
+                    finishedAt:null,
+                    duration:null
+                };
+
+                this.simulations.unshift(simulation);
+
+                this.selectSimulation(simulationId);
+            },
+
+            getOperatorName: function(index){
+                if(index == "all"){
+                    return "Tout";
+                }else {
+                    return this.operators[index].name;
+                }
+            },
+
+            selectSimulation: function(id){
+                this.simulationSelectedId = id;
+
+                firstTabEl = document.querySelector('#transactionsTab');
+
+                if(firstTabEl){
+                    
+                    /*
+                    firstTab = new bootstrap.Tab(firstTabEl)
+                    firstTab.show()
+                    */
+
+                }
+
+            },
+
+            getSelectedSimulation: function(){
+
+                simulation = null;
+
+                for (var i = 0; i < this.simulations.length; i++) {
+                    if(this.simulations[i].id == this.simulationSelectedId){
+                        simulation = this.simulations[i];
+
+                        this.selectedSimulation = this.simulations[i];
+
+                        break;
+                    }
+                }
+
+                return simulation;
+            },
+
+            getSelectedStats: function(){
+
+                var simulation = this.getSelectedSimulation();
+
+                var duration = 0;
+
+                if(simulation.previousStats == null){
+                    ex = 0;
+                }else{
+                    val = simulation.previousStats.pause + simulation.previousStats.success + simulation.previousStats.failure;
+                    ex = Math.floor(val / simulation.transactions.length * 100)
+                }
+
+                if(simulation.finishedAt != null){
+                    duration = simulation.finishedAt - simulation.startedAt;
+                }
+
+                return {
+                    percent: ex, 
+                    duration: duration          
+                }
+            },
+
+            updatedPreviousStatsSelectedSimulation: function(stats){
+
+                for (var i = 0; i < this.simulations.length; i++) {
+                    if(this.simulations[i].id == this.simulationSelectedId){
+                        this.simulations[i].previousStats = stats;
+                        break;
+                    }
+                }
+
+                return simulation;
+            },
+
+            stopCurrentSelectedSimulation: function(){
+                var simulation = this.getSelectedSimulation();
+                simulation.simulationFinished = true;
+                simulation.executing = false;
+            },
+
+            updatedTransactionsSelectedSimulation: function(transactions){
+                var simulation = this.getSelectedSimulation();
+                simulation.transactions = transactions;
+            },
+
+            StartSimulation: function(){
+
+                var vm = this;
+                var simulation = this.getSelectedSimulation();
+
+                simulation.isSimulated = true;
+                simulation.executing = true;
+                simulation.simulationStarted = true;
+
+                firstTabEl = document.querySelector('#executeTab');
+                firstTab = new bootstrap.Tab(firstTabEl)
+                // firstTab.show();
+
+                NProgress.start();
+
+                simulation.startedAt = (new Date()).getTime();
+
+                axios.post(vm.urls.services.gateway.api.sendTransactions,simulation.transactions)
+                    .then(function(response){
+                        trxStatus = response.data;
+
+                        trxStatusMap = {};
+
+                        for(let i = 0; i < trxStatus.length; i++){
+                            trxStatusMap[trxStatus[i].transactionId] = trxStatus[i];
+                        }
+                        
+                        simulation.trxAcceptation = trxStatusMap;
+
+                        NProgress.done();
+
+                    })
+                    .catch(function(error){
+                        vm.stopCurrentSelectedSimulation();
+                        alertify.error("Une erreur c'est produite");
+                        alertify.error("Suivi de la impossible");
+                        console.log(error.message);
+                    })
+                    .then(function(){
+                        NProgress.done();
+                    })
+
+            },
+
+            checkAcception: function(trxTmp){
+
+                trxAcceptation = this.getSelectedSimulation().trxAcceptation;
+                
+                if(trxAcceptation){
+                    let trxId = trxTmp.transactionId;
+                    let trxStatus = trxAcceptation[trxId];
+                   return trxStatus.status;
+                }  
+            },
+
+            showResults: function(){
+                firstTabEl = document.querySelector('#rapportTab');
+                firstTab = new bootstrap.Tab(firstTabEl);
+                firstTab.show();
+
+                vm = this;
+
+                setTimeout(function(){
+                    vm.setupAllCanvas();     
+                },50);
+            },
+
+            simulate: function(){
+               this.addSimulation(true);
+            },
+
+            updateLoop: function(){
+
+                var vm = this;
+
+                var simulation = this.getSelectedSimulation();
+
+                if(!simulation ){
+                    return;
+                }
+
+                batchnumber = simulation.batchnumber
+
+                if(!simulation.simulationFinished && simulation.executing){
+
+                    axios.get(vm.urls.services.gateway.transactions.stats + batchnumber)
+                    .then(function(response){
+
+                        data = response.data;
+                        previousStats = simulation.previousStats;
+
+                        if(previousStats){
+                            /*
+                            console.log({
+                                new:previousStats.new - data.new,
+                                success:previousStats.success - data.success,
+                                failure:previousStats.failure - data.failure,
+                                pause:previousStats.pause - data.pause
+                            })
+                            */
+                        }
+
+                        vm.updatedPreviousStatsSelectedSimulation(data);
+
+                        if(vm.getSelectedStats().percent == 100){
+
+                            simulation.finishedAt = (new Date()).getTime();
+
+                            setTimeout(function(){
+
+                                vm.stopCurrentSelectedSimulation();
+
+                            },20)
+
+                        }
+
+                    })
+                    .catch(function(error){
+                        alertify.error("Une erreur c'est produite");
+                        console.log(error.message)
+                    });
+                }else if(simulation.simulationFinished){
+
+                    if(!simulation.newTransactionCollected){
+
+                        axios.get(vm.urls.services.gateway.transactions.rest2 + batchnumber)
+                            .then(function(response){
+                                transactions = response.data;
+
+                                t = 0;
+
+                                for (var i = transactions.length - 1; i >= 0; i--) {
+                                    
+                                    trx = transactions[i];
+
+                                    p = (new Date(trx.finishedAt).getTime()) -  (new Date(trx.createdAt).getTime())
+
+                                    if(p > t){
+                                        t = p;
+                                    }
+                                }
+
+                                vm.updatedTransactionsSelectedSimulation(transactions);
+                                
+                                simulation.newTransactionCollected = true;
+
+                                simulation.duration = t;
+
+                                alertify.success("Etats des transaction mis à jour")
+
+                                setTimeout(function(){
+
+                                    // vm.showResults();
+
+                                }, 4000);
+                            })
+                            .catch(function(error){
+                                console.log(error.message);
+                                alertify.error("Une erreur c'est produite");
+                            });
+                    }
+
+                }
+
+            },
+
+            getTransactionDuration: function(trx){
+                if(trx.finishedAt && trx.createdAt){
+                    return (new Date(trx.finishedAt).getTime()) -  (new Date(trx.createdAt).getTime());
+                }
+            },
+
+            getDateTime: function(date){
+                if(date){
+                    d = new Date(date);
+
+                    s = "" + d.getMilliseconds();
+
+                    l = s.length;
+
+                    if(l == 1){
+                        s = "00" + s;
+                    }else if(l == 2){
+                        s =  "0"+ s;
+                    }
+
+                    return d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + "." + s;
+                }
+                return "";
+            },
+
+            setupAllCanvas: function(){
+
+
+                var simulation = this.getSelectedSimulation();
+
+                /*  Bilan statuts finaux */
+                stats = [];
+
+                if(simulation.newTransactionCollected){
+                    simulationStats = simulation.previousStats;
+                    stats.push(simulationStats.success);
+                    stats.push(simulationStats.failure);
+                    stats.push(simulationStats.pause);
+                }
+
+                const data = {
+                  labels: [
+                    'Réussie',
+                    'Echouée',
+                    'Pause',
+                  ],
+                  datasets: [{
+                    label: 'Statut finaux',
+                    data: stats,
+                    backgroundColor: [
+                      '#28a745',
+                      '#dc3545',
+                      'rgb(255, 205, 86)'
+                    ],
+                    hoverOffset: 4
+                  }]
+                }
+
+                const config = {
+                  type: 'doughnut',
+                  data,
+                  options: {}
+                };
+
+
+                batchChartElement = document.getElementById('myChart')
+
+                if(batchChartElement){
+                    var batchChart = new Chart(batchChartElement,config);
+                }
+
+                /* Bilan Temporel */
+
+                statsDuration = [];
+
+                if(simulation.newTransactionCollected){
+                    simulationStats = simulation.previousStats;
+                    statsDuration.push(simulationStats.minProcessDuration);
+                    statsDuration.push(simulationStats.avgProcessDuration);
+                    statsDuration.push(simulationStats.maxProcessDuration);
+                }
+
+                const labels = ["Meilleur temps","Temps moyen","Temps maximal"]
+
+                const dataDuration = {
+                  labels: labels,
+                  datasets: [{
+                    label: 'Bilan temporel',
+                    data: statsDuration,
+                    backgroundColor: [
+                        '#28a745',
+                        '#3b7ddd',
+                        '#dc3545'
+                    ],
+                    borderColor: [
+                        '#28a745',
+                        '#3b7ddd',
+                        '#dc3545'
+                    ],
+                    borderWidth: 1
+                  }]
+                };
+
+                const configDuration = {
+                  type: 'bar',
+                  data: dataDuration,
+                  options: {
+                    scales: {
+                      y: {
+                        beginAtZero: false
+                      }
+                    }
+                  },
+                };
+
+                durationChartElement = document.getElementById('durationChart')
+
+                if(durationChartElement){
+                    var durationChartElement = new Chart(durationChartElement,configDuration);
+                }
+                
+            },
+
+            openTransactionPopup(url){
+
+                let params = `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=0,height=0,left=-1000,top=-1000`;
+
+                window.open(url,'',params);
+
+            }
+
+        }
+
+    });
+
+</script>
+
+<%- include('../../../layout/footer') %>
+    

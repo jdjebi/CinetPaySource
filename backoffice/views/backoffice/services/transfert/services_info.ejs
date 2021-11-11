@@ -1,0 +1,72 @@
+                <form v-on:submit.prevent="updateService">
+                    <div class="h4 fw-bold">Général</div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="mb-3">
+                                <label class="col-form-label" >Nom du service</label>
+                                <input type="text" class="form-control" name="name" v-model="service.name">
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <div class="mb-3">
+                                <label class="col-form-label">Nom complet</label>
+                                <input type="text" class="form-control" value="" name="longName" v-model="service.longName">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="mb-3">
+                                <label class="col-form-label">Alias</label>
+                                <input type="text" class="form-control" name="minName" v-model="service.minName">
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <div class="mb-3">
+                                <label class="col-form-label">Code</label>
+                                <input type="text" class="form-control" value="" name="code" v-model="service.code" v-bind:disabled="true" v-model="service.code">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h4 fw-bold mt-4">Caractéristiques</div>
+                    <hr>
+                    <div class="row mb-3">
+                        <div class="col-md-6 col-sm-12">
+                            <label class="col-form-label">URL</label>
+                            <input type="text" class="form-control" value="" name="url" v-model="service.url">    
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <label class="col-form-label">TOPIC</label>
+                            <input type="text" class="form-control" value="" name="topic"  v-bind:disabled="true" v-model="service.kafkaTopic">    
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="col-form-label">Type</label>
+                            <select class="form-select" value="" name="type" v-model="service.type">
+                                <option value="SIM-SERVICE">Service de SIM</option>
+                                <option value="API-SERVICE">Service d'API</option>
+                                <option value="MIX-SERVICE">Service MIX</option>        
+                            </select>    
+                        </div>
+                        <div class="col-6">
+                            <label class="col-form-label">Rôle</label>
+                            <input class="form-control" name="role" v-model="service.role" v-bind:disabled="true">                              
+                        </div>
+                    </div>
+                    <div class="h4 fw-bold mt-4">Description</div>
+                    <hr>
+                    <div class="row mb-3">
+                        <div class="col-sm-12 col-md-6">
+                            <textarea name="description" class="form-control" rows="3" v-model="service.description" placeholder="Description du service"></textarea>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-success" type="submit">Mettre à jour</button>
+                    </div>
+                </form>
+                <hr>
+                <div>
+                    <button v-on:click="deleteService" class="btn btn-danger" type="button"> Retirer le service</button>
+                </div>

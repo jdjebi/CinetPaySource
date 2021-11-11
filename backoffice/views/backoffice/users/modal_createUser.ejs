@@ -1,0 +1,52 @@
+<div class="modal fade" id="formCreateUser" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form v-on:submit.prevent="createUser">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Nouvelle utilisateur</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="col-form-label">Nom d'utilisateur:</label>
+                        <input type="text" v-model="form.user.username" class="form-control" name="username" required>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6 col-sm-12">
+                            <label class="col-form-label">Nom:</label>
+                            <input type="text" v-model="form.user.name" class="form-control" name="name" required>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <label class="col-form-label">Prénom:</label>
+                            <input type="text" v-model="form.user.surname" class="form-control" name="surname" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6 col-sm-12">
+                            <label class="col-form-label">Rôle:</label>
+                            <select class="form-select" name="role"v-model="form.user.role" required>
+                                <option value="staff">Staff</option>
+                                <option value="admin">Administrateur</option>
+                                <option value="superadmin">Super Administrateur</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <label class="col-form-label">Mot de passe:</label>
+                            <input type="text" v-model="form.user.password" class="form-control" name="password" required>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    
+                    <button v-if="!form.sending" type="submit" class="btn btn-success">Créer</button>
+                    <button v-if="form.sending" type="submit" class="btn btn-success disabled">Créer</button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

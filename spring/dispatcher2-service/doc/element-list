@@ -1,0 +1,7 @@
+com.payout.dispatcher
+com.payout.dispatcher.controller
+com.payout.dispatcher.dispatchers
+com.payout.dispatcher.eventlog.entity
+com.payout.dispatcher.kafka
+com.payout.dispatcher.operators
+com.payout.dispatcher.transactions

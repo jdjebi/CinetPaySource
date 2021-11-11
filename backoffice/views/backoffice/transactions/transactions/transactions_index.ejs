@@ -1,0 +1,204 @@
+<%- include('../../../layout/header2') %>
+
+<div class="wrapper"> 
+<%- include('../../../layout/sidebar') %>
+<div class="main">
+<%- include('../../../layout/navbar') %>
+
+<%- include('transactions_css') %>
+
+<main id="v-app" class="content p-0 position-relative">
+
+    <div class="border-top bg-white p-3 d-flex justify-content-between align-items-center">
+        <div class="h3 mb-0">
+          Gestion des transactions         
+        </div>
+        <div class="d-flex">
+          <div class="trx-stats-box">
+            <div class="label fw-bold text-success">{{ stats.success }}</div>
+            <div class="text-muted small">SUCCESS</div>
+          </div>
+          <div class="trx-stats-box">
+            <div class="label fw-bold text-primary">{{ stats.rec }}</div>
+            <div class="text-muted small">EN COURS</div>
+          </div>
+          <div class="trx-stats-box">
+            <div class="label fw-bold text-warning">{{ stats.pause }}</div>
+            <div class="text-muted small">PAUSE</div>
+          </div>
+          <div class="trx-stats-box">
+            <div class="label fw-bold text-danger">{{ stats.failure }}</div>
+            <div class="text-muted small">ECHEC</div>
+          </div>
+        </div>
+    </div>
+    <div class="bg-white border-top">
+      <div class="d-flex">
+        <div class="trx-menu-item border-end">
+          <a href="#">Tableau de bord</a>
+        </div>
+        <div class="trx-menu-item border-end">
+          <a href="/backoffice/transactions/events">Evènements</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-top">
+      <div class="table-responsive">
+        <table class="table table-lg bg-white">
+          <thead>
+              <tr>
+                <th>Statut</th>
+                <th>ID</th>
+                <th>Montant</th>
+                <th>Opérateur</th>
+                <th>Pays</th>
+                <th>Date</th>
+              </tr>
+          </thead>
+          <tbody>
+            <tr v-for="trx in transactions">
+              <td>
+                <span class="badge shadow" v-bind:class="getTransactionStatusStyleBadgeBackgroundClass(trx.status)">
+                  {{ translateTransactionStatus(trx.status) }}
+                </span>
+            </td>
+              <td>
+                <a v-bind:href="urls.backoffice.transactions.showTransaction + trx.transactionId" class="text-dark">{{ trx.transactionId }}</a>
+              </td>
+              <td>{{ trx.amount }} {{ trx.currency }}</td>
+              <td>{{ trx.operator }}</td>
+              <td>
+                <img v-bind:src="getOperatorCountryLogo(trx.country)" width="20"> &nbsp; {{ trx.country }}
+              </td>
+              <td>{{ trx.createdAt }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+</main>
+</div>
+</div>
+
+<%- include('../../../layout/scripts2') %>
+
+<script src="/pages/backoffice-v1/operators/operators_helpers.js"></script>
+
+<script type="text/javascript">
+  
+function TransactionIndex(urls){
+
+  console.log(urls);
+
+  return new Vue({
+
+    el:"#v-app",
+
+    data:{
+
+      urls:urls,
+
+      stats:{
+        success:null,
+        failure:null,
+        pause:null,
+        rec:null
+      },
+
+      transactions: null
+
+    },
+
+    mounted: function(){
+
+      this.getTransactions();
+
+    },
+
+    methods:{
+      getTransactionsRequest: function(){
+        return axios.get(this.urls.services.gateway.transactions.rest2);
+      },
+
+      getTransactionsStatsRequest: function(){
+        return axios.get(this.urls.services.gateway.transactions.stats);
+      },
+
+      getTransactions: function(){
+        NProgress.start();
+
+        var vm = this;
+
+        axios.all([this.getTransactionsRequest(), this.getTransactionsStatsRequest()])
+          .then(function(result){
+            vm.updateTransactions(result[0].data);
+            vm.updateTransactionsStats(result[1].data);
+          })  
+          .catch(function(error){
+            console.log(error.message);
+            alertify.error("Récupération des transactions impossible");
+          })
+          .then(function(){
+            NProgress.done();
+          });
+      },
+
+      updateTransactions: function(transactions){
+        this.transactions = transactions;
+      },
+
+      updateTransactionsStats: function(stats){
+        this.stats = stats;
+      },
+
+      translateTransactionStatus: function(status){
+        if(status == "REC"){
+          return "EN COURS";
+        } else if(status == "PAUSE"){
+          return "EN PAUSE";
+        } else if(status == "PAILURE"){
+          return "ECHEC";
+        }else if(status == "SUCCESS"){
+          return "SUCCESS";
+        }else{
+          return status;
+        }
+      },
+
+      getTransactionStatusStyleBadgeBackgroundClass: function(status){
+        if(status == "REC"){
+          return "bg-primary";
+        } else if(status == "PAUSE"){
+          return "bg-warning";
+        } else if(status == "REJ"){
+          return "bg-danger";
+        }else if(status == "SUCCESS"){
+          return "bg-success";
+        }else if(status == "FAILURE"){
+          return "bg-danger";
+        }
+        else{
+          return "bg-dark";
+        }
+      },
+
+      getOperatorLogo: function(logoUrl){
+          return operatorLogoHelper(logoUrl);
+      },
+
+      getOperatorCountryLogo: function(countryCode){
+          return getOperatorCountryLogo(countryCode);
+      },
+
+    }
+
+  });
+
+}
+
+var urls = <%- JSON.stringify(urls) %>;
+
+var vm = TransactionIndex(urls);
+
+</script>

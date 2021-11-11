@@ -1,0 +1,189 @@
+<%- include('../../../layout/header2') %>
+
+
+<div class="wrapper">   
+<%- include('../../../layout/sidebar') %>
+    
+<div class="main">
+<%- include('../../../layout/navbar') %>
+
+<main id="v-app" class="content p-0 border-top">
+
+<div class="bg-white p-3 position-relative">
+    
+    <button v-on:click="generateOneTrx" class="btn btn-success">Générer</button>
+
+</div>
+
+<div class="container-fluid pt-1" style="font-size: 13px">
+    <div class="row">
+        <div class="col-md-4 col-sm-12">
+            <template v-for="(trx,index) in transactions">
+                <div class="bg-white border mb-3">
+                    <div class="border-bottom pb-1 pt-2 ps-2 pe-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="h4 mb-1">Transaction #{{ index }}</div>
+                                <div class="small text-muted">
+                                    <template  v-if="transactionsModels[trx.modelIndex].id == null">
+                                        Aucun identifiant
+                                    </template>
+                                    <template v-else>
+                                        {{ transactionsModels[trx.modelIndex].id }}
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="me-2">
+                                <div v-show="trx.processStarted">
+                                    <i class="fa fa-circle text-warning"></i> <span class="text-muted">En cours</span>
+                                </div>
+
+                                <div v-show="!trx.processStarted">
+                                    <i class="fa fa-circle text-muted"></i>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex p-2 small">
+                            <div class="me-4">
+                                <div class="fw-bold">Code pays</div> 
+                                <div>{{ transactionsModels[trx.modelIndex].country }}</div>
+                            </div>
+                            <div class="me-4">
+                                <div class="fw-bold">Code de ressouces</div> 
+                                <div>{{ transactionsModels[trx.modelIndex].resourcesOperatorCode }}</div>
+                            </div>
+                            <div>
+                                <div class="fw-bold">Opérateur</div> 
+                                <div>{{ transactionsModels[trx.modelIndex].operator }}</div>
+                            </div>
+                        </div>
+                        <div class="d-flex p-2 border-top small">
+                            <div class="me-2">
+                                <div class="fw-bold">Cinetpay TRX ID </div> 
+                                <div class="small">{{ transactionsModels[trx.modelIndex].remoteId }}</div>
+                            </div>
+                            <div class="me-2">
+                                <div class="fw-bold">Lot</div> 
+                                <div class="small">{{ transactionsModels[trx.modelIndex].batchnumber }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between border-top ps-3 pt-1 pb-1 pe-3 small">
+                        <div>
+                            <div>Numéro: {{ transactionsModels[trx.modelIndex].phone }}</div>
+                            <div>
+                                <span class="fw-bold">{{ transactionsModels[trx.modelIndex].amount }}</span> {{ transactionsModels[trx.modelIndex].currency }}
+                            </div>
+                        </div>
+                        <div>
+                            <button v-on:click="getTransactonJSON(transactionsModels[trx.modelIndex])" class="btn btn-sm btn-light border">JSON</button>
+                            <button v-on:click="playTransaction(trx,index)" class="btn btn-sm btn-success" v-bind:disabled="trx.sending">
+                                <template v-if="transactionsModels[trx.modelIndex].id == null">
+                                    Jouer
+                                </template>
+                                <template v-else>
+                                    Rejouer
+                                </template>
+                            </button>
+                        </div>
+                    </div>                
+                </div>
+            </template>
+        </div>
+        <div class="col-md-8 col-sm-12">
+            <div class="bg-white border shadow">
+                <div class="border-bottom ps-3 pt-3 pb-2 pe-3 d-flex justify-content-between">
+                    <div class="h4">Transaction #{{ trxSelectedIndex }}</div>
+                    <div class="text-success fw-bolder">
+                        <i class="far fa-clock"></i> &nbsp;Temps: {{ getProcessTime(transactions[trxSelectedIndex]) }} ms
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table mb-0 table-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Evènement</th>
+                                <th>Service</th>
+                                <th>Type</th>
+                                <th>Niveau</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody v-if="trxSelectedIndex != null">
+                            <tr v-for="(event,index) in transactions[trxSelectedIndex].events">
+                                <td>{{ index + 1}}</td>
+                                <td class="fw-bolder">{{ event.action }}</td>
+                                <td class="text-muted">{{ event.originService }}</td>
+                                <td>
+                                    <span class="badge" v-bind:class="[getBadgeBackground(event.strictType)]">
+                                        {{ event.strictType }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge" v-bind:class="[getBadgeBackground(event.loggingLevel)]">
+                                        {{ event.loggingLevel }}
+                                    </span>
+                                </td>
+                                <td>{{ event.date }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</main>
+</div
+</div>
+<%- include('../../../layout/scripts2') %>
+<script type="text/javascript" src="/pages/backoffice-v1/transactions/simulator/simulator_index.vue.js"></script>
+
+<script type="text/javascript">
+    function randomInt(max){
+        return Math.floor(Math.random() * max);
+    }
+
+    function getCountryPrefix(prefix){
+        country_tel_prefix = {
+            CI:"225",
+            SN:"221",
+            CM:"237",
+            ML:"223"
+        }
+        return country_tel_prefix[prefix];
+    }
+
+    function fakePhone(length)
+    {
+        var str = "";
+        while (str.length < length) {
+            str += Math.floor(Math.random() * 10 + 1);
+        }
+        return str;
+    }
+
+    function fakeAmount(max,min){
+        return Math.round(Math.floor(Math.random() * (max - min) + min) / 10) * 10;
+    }
+</script>
+
+<script type="text/javascript">
+
+var vm = SimulatorPage({
+    urls:{
+        operators: <%- JSON.stringify(operatorUrls) %>,
+        services: <%- JSON.stringify(servicesUrls) %>
+    }
+});
+
+</script>
+
+
+<%- include('../../../layout/footer') %>
+    

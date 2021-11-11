@@ -1,0 +1,38 @@
+<%- include('../../../../layout/header2') %>
+<div class="wrapper">	
+<%- include('../../../../layout/sidebar') %>
+<div class="main">
+
+<%- include('../../../../layout/navbar') %>
+
+<%- include('../services_support_css.ejs') %>
+
+<main id="v-app" class="content p-0">
+
+<template v-if="showSyncForm == true">
+    <div v-if="service == null" class="pt-5">
+        <%- include('passerelle_index_syncform.ejs') %>
+    </div>
+</template>
+
+<template v-if="showGatewayPage  == true">
+    <%- include('passerelle_index_page.ejs') %>
+</template>
+
+</main>
+</div>
+</div>
+<%- include('../../../../layout/scripts2') %>
+<script src="https://cdn.jsdelivr.net/npm/json-formatter-js@2.3.4/dist/json-formatter.umd.min.js"></script>
+<script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
+<script src="/pages/backoffice-v1/services/services_tools.js"></script>
+<script src="/pages/backoffice-v1/services/gateway/gateway_manage.js"></script>
+<script>
+var vm = GatewayManagePage({
+    servicesUrls:<%- JSON.stringify(data.urls.servicesUrls) %>
+});
+
+</script>
+
+
+<%- include('../../../../layout/footer') %>

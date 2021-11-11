@@ -1,0 +1,29 @@
+<%- include('../../layout/header2') %>
+<div class="wrapper">	
+<%- include('../../layout/sidebar') %>
+<div class="main">
+<%- include('../../layout/navbar') %>
+
+<main id="v-app" class="content p-0 border-top">
+<div id="main-wrapper" class="d-none">
+<div v-if="user">
+
+    test
+
+</div>
+</div>
+</main>
+</div>
+</div>
+<%- include('../../layout/scripts2') %>
+<script src="/pages/backoffice-v1/users/users_show.vue.js"></script>
+
+<script>
+    var vm = UsersShowPage({
+        userId: <%- userId %>,
+        urls:<%- JSON.stringify(session_urlspack) %>,
+    });
+</script>
+
+<%- include('../../layout/footer') %>
+	

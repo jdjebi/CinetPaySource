@@ -1,0 +1,43 @@
+<div>
+  <div class="bg-white d-flex">
+      <div style="flex-grow: 2;">
+          <ul id="horizontal-nav-tabs" class="nav nav-tabs">
+            <li class="nav-item">
+                <a id="transactionsTab" class="nav-link" v-bind:class="{active: menu.transactions}" href="#" data-bs-toggle="tab" data-bs-target="#transactions">
+                  <span v-if="getSelectedSimulation().simulationFinished && !getSelectedSimulation().newTransactionCollected" class="spinner-border spinner-border-sm text-success" role="status" aria-hidden="true"></span> Transactions
+                </a>
+            </li>
+            <li class="nav-item"> 
+              <a id="executeTab" class="nav-link" v-bind:class="{active: menu.execute}" href="#" data-bs-toggle="tab" data-bs-target="#execute">
+                <span v-if="getSelectedSimulation().executing" class="spinner-border spinner-border-sm text-success" role="status" aria-hidden="true"></span>
+                Exécution
+              </a>
+            </li>
+            <li class="nav-item">
+              <a id="rapportTab" v-on:click="showResults" class="nav-link" v-bind:class="{active: menu.rapport}" href="#" data-bs-toggle="tab" data-bs-target="#rapport">
+                Rapport
+              </a>
+            </li>
+          </ul>
+      </div>
+  </div>
+</div>
+<div>
+
+
+<div class="tab-content pb-4">
+    <div id="transactions" class="tab-pane fade show active">
+      <%- include('simulator_transactions') %>
+    </div>
+    <div id="execute" class="p-3 tab-pane fade show">
+      <%- include('simulator_execute') %>
+    </div>
+    <div id="rapport" class="tab-pane fade show">
+      <%- include('simulator_rapport') %>
+    </div>
+</div>
+
+
+
+
+</div>

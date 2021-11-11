@@ -1,0 +1,229 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model fl_balance {
+  id            Int       @id @default(autoincrement()) @db.UnsignedInt
+  date          DateTime? @db.Date
+  sim_id        Int       @db.UnsignedInt
+  first_balance Int       @default(0)
+  last_balance  Int       @default(0)
+  created_at    DateTime? @db.Timestamp(0)
+  updated_at    DateTime? @db.Timestamp(0)
+  sims          sims      @relation(fields: [sim_id], references: [id])
+
+  @@unique([date, sim_id], name: "unique_date_sim_id")
+  @@index([sim_id], name: "sim_id")
+}
+
+model post {
+  id        Int      @id @default(autoincrement())
+  title     String   @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  content   String?  @db.Text
+  published Boolean  @default(false)
+  authorId  Int
+  author    user2    @relation(fields: [authorId], references: [id])
+
+  @@index([authorId], name: "authorId")
+}
+
+model profile {
+  id     Int     @id @default(autoincrement())
+  bio    String? @db.Text
+  userId Int     @unique
+  user2  user2   @relation(fields: [userId], references: [id])
+}
+
+model recharges {
+  id             Int       @id @default(autoincrement()) @db.UnsignedInt
+  sim_id         Int?      @db.UnsignedInt
+  sms            String?   @db.Text
+  transaction_id String?   @unique @default("") @db.VarChar(100)
+  amount         Int
+  balance_before Int
+  balance_after  Int
+  notified       Int       @default(0)
+  created_at     DateTime? @db.Timestamp(0)
+  updated_at     DateTime? @db.Timestamp(0)
+  sims           sims?     @relation(fields: [sim_id], references: [id])
+
+  @@index([sim_id], name: "sim_id")
+}
+
+model simbox {
+  id            Int       @id @default(autoincrement()) @db.UnsignedInt
+  name          String    @unique @db.VarChar(100)
+  description   String?   @db.Text
+  total_port    Int
+  serial_number String?   @db.VarChar(255)
+  local_ip      String?   @db.VarChar(50)
+  internet_ip   String?   @db.VarChar(50)
+  url           String    @db.VarChar(255)
+  password      String    @db.VarChar(255)
+  status        Int       @default(1)
+  created_at    DateTime? @db.Timestamp(0)
+  updated_at    DateTime? @db.Timestamp(0)
+  sims          sims[]
+}
+
+model sims {
+  id                       Int                @id @default(autoincrement()) @db.UnsignedInt
+  simbox_id                Int                @db.UnsignedInt
+  name                     String?            @db.VarChar(255)
+  email                    String?            @unique @db.VarChar(100)
+  password                 String?            @db.VarChar(255)
+  token                    String?            @db.Text
+  slot                     Int?
+  phone                    String?            @db.VarChar(20)
+  country                  String?            @db.VarChar(255)
+  payment_method           String?            @db.VarChar(10)
+  balance                  Int                @default(0)
+  commission               Int                @default(0)
+  secret_code              String?            @db.VarChar(255)
+  syntax_balance           String?            @db.VarChar(255)
+  syntax_deposit           String?            @db.VarChar(255)
+  syntax_last_transactions String?            @db.VarChar(255)
+  syntax_commission        String?            @db.VarChar(255)
+  pending                  Int                @default(0)
+  active                   Int                @default(1)
+  next_sms                 Int                @default(0)
+  access_token             String?            @db.Text
+  created_at               DateTime?          @db.Timestamp(0)
+  updated_at               DateTime?          @db.Timestamp(0)
+  deleted_at               DateTime?          @db.Timestamp(0)
+  production               Boolean            @default(false)
+  simbox                   simbox             @relation(fields: [simbox_id], references: [id])
+  fl_balance               fl_balance[]
+  recharges                recharges[]
+  sms                      sms[]
+  solde_historique         solde_historique[]
+  transfers                transfers[]
+
+  @@index([simbox_id], name: "simbox_id")
+}
+
+model sms {
+  id             Int       @id @default(autoincrement()) @db.UnsignedInt
+  sim_id         Int       @db.UnsignedInt
+  timestmp       BigInt
+  origin         String    @db.VarChar(255)
+  content        String    @db.Text
+  content_base64 String?   @db.Text
+  created_at     DateTime? @db.Timestamp(0)
+  updated_at     DateTime? @db.Timestamp(0)
+  sims           sims      @relation(fields: [sim_id], references: [id])
+
+  @@index([sim_id], name: "sim_id")
+}
+
+model solde_historique {
+  id              Int       @id @default(autoincrement()) @db.UnsignedInt
+  sim_id          Int       @db.UnsignedInt
+  balance         Int
+  created_at_date DateTime? @db.Date
+  created_at      DateTime? @db.Timestamp(0)
+  updated_at      DateTime? @db.Timestamp(0)
+  sims            sims      @relation(fields: [sim_id], references: [id])
+
+  @@index([created_at_date], name: "created_at_date")
+  @@index([sim_id], name: "sim_id")
+}
+
+model transfers {
+  id                                  Int       @id @default(autoincrement()) @db.UnsignedInt
+  sim_id                              Int       @db.UnsignedInt
+  remote_id                           String?   @unique @db.VarChar(100)
+  uuid                                String?   @db.VarChar(255)
+  country                             String?   @db.VarChar(255)
+  payment_method                      String?   @db.VarChar(10)
+  batch_number                        String    @db.VarChar(255)
+  ordre                               Int
+  phone                               String    @db.VarChar(255)
+  amount                              Int
+  amount_send                         Int       @default(0)
+  commission                          Int       @default(0)
+  status                              String    @db.VarChar(10)
+  server_rec                          Int       @default(0)
+  comment                             String    @db.VarChar(255)
+  comment_cinetpay                    String?   @db.Text
+  todo                                Int       @default(1)
+  done                                Int       @default(0)
+  pending                             Int       @default(0)
+  ussd_executed                       Boolean   @default(false)
+  retrieval_date                      DateTime  @db.DateTime(0)
+  processing_date                     DateTime? @db.DateTime(0)
+  date_end_processing                 DateTime? @db.DateTime(0)
+  processing_date_date                DateTime? @db.Date
+  ussd_response                       String?   @db.Text
+  date_ussd_response                  DateTime? @db.DateTime(0)
+  sms                                 String?   @db.Text
+  date_sms_response                   DateTime? @db.DateTime(0)
+  transaction_id                      String?   @db.VarChar(255)
+  balance_before                      Int       @default(0)
+  balance_after                       Int       @default(0)
+  diff_balance                        Int       @default(0)
+  ussd_validated                      Int       @default(0)
+  notified                            Int       @default(0)
+  notified_with_cron                  Int?      @default(0)
+  notified_error                      Int       @default(0)
+  notified_operator_id                Int       @default(0)
+  json_notified                       String?   @db.Text
+  deposit_step                        String?   @db.VarChar(50)
+  last_transactions                   String?   @db.VarChar(255)
+  retry                               Boolean   @default(false)
+  notified_date                       DateTime? @db.DateTime(0)
+  omsn_get_balance_at                 DateTime? @db.DateTime(0)
+  omsn_balance_before_sms_received_at DateTime? @db.DateTime(0)
+  omsn_balance_after_sms_received_at  DateTime? @db.DateTime(0)
+  created_at                          DateTime? @db.Timestamp(0)
+  updated_at                          DateTime? @db.Timestamp(0)
+  sims                                sims      @relation(fields: [sim_id], references: [id])
+
+  @@index([payment_method], name: "payment_method")
+  @@index([processing_date_date], name: "processing_date_date")
+  @@index([retrieval_date], name: "retrieval_date")
+  @@index([sim_id], name: "sim_id")
+  @@index([status], name: "status")
+}
+
+model user2 {
+  id      Int      @id @default(autoincrement())
+  name    String?  @db.VarChar(255)
+  email   String   @unique @db.VarChar(255)
+  posts   post[]
+  profile profile?
+}
+
+model users {
+  id       Int     @id @default(autoincrement())
+  username String? @db.VarChar(255)
+  password String? @db.VarChar(255)
+}
+
+model games_transaction {
+  id                Int                 @id @default(autoincrement())
+  title             String?             @db.VarChar(100)
+  numbertrx         Int?
+  paymentmethod     String?             @db.VarChar(10)
+  country           String?             @db.VarChar(10)
+  test_transactions test_transactions[]
+}
+
+model test_transactions {
+  id                Int               @id @default(autoincrement())
+  country           String            @db.VarChar(255)
+  paymentmethod     String            @db.VarChar(10)
+  batchNumber       String            @db.VarChar(255)
+  phone             String            @db.VarChar(255)
+  amount            Int
+  gametrx_id        Int
+  games_transaction games_transaction @relation(fields: [gametrx_id], references: [id])
+
+  @@index([gametrx_id], name: "fk_gametrx")
+}

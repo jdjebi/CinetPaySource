@@ -1,0 +1,55 @@
+<div class="modal fade" id="formCreateOperator" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form v-on:submit.prevent="OnSubmitOperatorForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Nouvel opérateur</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="col-form-label">Nom de l'opérateur:</label>
+                        <input type="text" v-model="form.operator.name" class="form-control" name="name">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="col-form-label">Alias:</label>
+                        <input type="text" v-model="form.operator.alias" class="form-control" name="alias">
+                        <small class="text-muted">Version courte du nom de l'opérateur</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="col-form-label">Pays:</label>
+                        <select v-model="form.operator_meta.country_index" name="country" id="country" class="form-select">
+                            <option v-for="(country,index) in countries" v-bind:value="index">{{ country.name }} ({{ country.code }}; {{ country.currency.name }})</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="col-form-label">Sélectionnez les moyens de transfert:</label>
+                    </div>
+                    <div class="mb-3 d-flex">
+                        <div class="form-check me-4">
+                            <input class="form-check-input" type="checkbox" id="useApi" v-model="form.operator.useApi">
+                            <label class="form-check-label" for="useApi">
+                                API
+                            </label>
+                          </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="useSIM" v-model="form.operator.useSIM">
+                            <label class="form-check-label" for="useSIM">
+                                SIM
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button v-if="!form.sending" type="submit" class="btn btn-success">Créer</button>
+                    <button v-if="form.sending" type="submit" class="btn btn-success disabled">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
